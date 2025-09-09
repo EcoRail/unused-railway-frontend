@@ -120,6 +120,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* 웹페이지 전체가 스크롤되지 않도록 설정 */
+  html,
+  body,
+  #__next {
+    @apply h-full overflow-hidden;
+  }
   body {
     @apply bg-background text-foreground;
   }

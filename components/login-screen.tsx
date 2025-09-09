@@ -36,8 +36,9 @@ export function LoginScreen({ onLogin, onGoToRegister }: LoginScreenProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    // min-h-screen을 h-full로 변경하여 부모 컨테이너에 맞춤
+    <div className="h-full bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md border-0 shadow-none">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-primary/10 rounded-full">

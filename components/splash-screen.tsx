@@ -3,16 +3,9 @@ import { Train } from "lucide-react"
 export function SplashScreen() {
   return (
     <div
-      className="min-h-screen flex items-center justify-center relative"
+      className="h-full flex items-center justify-center relative"
       style={{
         background: "linear-gradient(135deg, #15803d 0%, #84cc16 100%)",
-        minHeight: "100vh",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 9999,
       }}
     >
       <div className="text-center relative z-10">

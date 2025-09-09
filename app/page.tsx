@@ -39,17 +39,27 @@ export default function Home() {
     setAppState("login")
   }
 
-  if (appState === "splash") {
-    return <SplashScreen />
+  const renderContent = () => {
+    switch (appState) {
+      case "splash":
+        return <SplashScreen />
+      case "login":
+        return <LoginScreen onLogin={handleLogin} onGoToRegister={() => setAppState("register")} />
+      case "register":
+        return <RegisterScreen onRegister={handleRegister} onGoToLogin={() => setAppState("login")} />
+      case "main":
+        return <MainApp onLogout={handleLogout} />
+      default:
+        return null
+    }
   }
 
-  if (appState === "login") {
-    return <LoginScreen onLogin={handleLogin} onGoToRegister={() => setAppState("register")} />
-  }
-
-  if (appState === "register") {
-    return <RegisterScreen onRegister={handleRegister} onGoToLogin={() => setAppState("login")} />
-  }
-
-  return <MainApp onLogout={handleLogout} />
+  return (
+    <div className="flex items-center justify-center h-full bg-muted/50">
+      <div className="w-full h-full max-w-sm bg-background shadow-2xl overflow-hidden relative md:h-[90vh] md:max-h-[800px] md:rounded-2xl">
+        {renderContent()}
+      </div>
+    </div>
+  )
 }
+

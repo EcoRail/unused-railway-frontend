@@ -39,8 +39,9 @@ export function RegisterScreen({ onRegister, onGoToLogin }: RegisterScreenProps)
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    // min-h-screen을 h-full로 변경하여 부모 컨테이너에 맞춤
+    <div className="h-full bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md border-0 shadow-none">
         <CardHeader className="text-center">
           <div className="flex items-center justify-between mb-4">
             <Button variant="ghost" size="sm" onClick={onGoToLogin} className="p-2">

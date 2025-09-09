@@ -29,7 +29,8 @@ export function MainApp({ onLogout }: MainAppProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    // min-h-screen을 h-full로 변경하여 부모 컨테이너에 맞춤
+    <div className="h-full bg-background flex flex-col">
       <div className="flex-1 overflow-hidden">
         <div className="h-full transition-all duration-300 ease-in-out">{renderScreen()}</div>
       </div>
