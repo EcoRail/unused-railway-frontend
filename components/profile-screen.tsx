@@ -5,8 +5,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { FileText, Heart, LogOut, UserX, MapPin, Users, CheckCircle, AlertCircle } from "lucide-react"
+import { FileText, Heart, LogOut, UserX, MapPin, CheckCircle, AlertCircle, ThumbsUp } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { PostDetailView } from "./post-detail-view"
 
 interface Proposal {
   id: string
@@ -14,7 +15,6 @@ interface Proposal {
   location: string
   status: "recruiting" | "completed"
   recommendCount: number
-  image: string
   createdAt: string
 }
 
@@ -24,6 +24,15 @@ interface ProfileScreenProps {
 
 export function ProfileScreen({ onLogout }: ProfileScreenProps) {
   const [activeTab, setActiveTab] = useState<"my-proposals" | "recommended">("my-proposals")
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
+
+  const handleShowPostDetail = (postId: string) => {
+    setSelectedPostId(postId)
+  }
+
+  const handleBack = () => {
+    setSelectedPostId(null)
+  }
 
   // Mock data - in real app, this would come from API
   const userProfile = {
@@ -38,7 +47,6 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
       location: "대전역 부지",
       status: "recruiting" as const,
       recommendCount: 8,
-      image: "/community-garden-with-vegetables-and-flowers.jpg",
       createdAt: "2일 전",
     },
     {
@@ -47,7 +55,6 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
       location: "서대전 부지",
       status: "completed" as const,
       recommendCount: 12,
-      image: "/small-cultural-space-with-art-exhibition.jpg",
       createdAt: "5일 전",
     },
   ]
@@ -55,11 +62,10 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
   const recommendedProposals: Proposal[] = [
     {
       id: "3",
-      title: "북한타미널 근처 팝업스토어",
-      location: "대전북한타미널 부지",
+      title: "복합터미널 근처 팝업스토어",
+      location: "대전복합터미널 부지",
       status: "recruiting" as const,
       recommendCount: 1,
-      image: "/modern-popup-store-with-young-entrepreneurs.jpg",
       createdAt: "1일 전",
     },
     {
@@ -68,22 +74,27 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
       location: "정성벨테마 부지",
       status: "recruiting" as const,
       recommendCount: 15,
-      image: "/railway-history-museum-interactive-displays.jpg",
       createdAt: "3일 전",
     },
   ]
 
   const handleDeleteAccount = () => {
+    // A custom modal would be better than confirm
     if (confirm("정말로 계정을 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
       // Handle account deletion
       console.log("Account deletion requested")
+      onLogout()
     }
   }
 
+  if (selectedPostId) {
+    return <PostDetailView postId={selectedPostId} onBack={handleBack} />
+  }
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex flex-col h-full bg-background">
       {/* Profile Header */}
-      <div className="bg-gradient-to-b from-primary/5 to-background p-6">
+      <div className="p-6">
         <div className="flex items-center gap-4">
           <Avatar className="w-16 h-16 bg-primary/10">
             <AvatarFallback className="text-primary font-semibold text-lg">
@@ -105,8 +116,8 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors",
               activeTab === "my-proposals"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 bg-card",
             )}
           >
             <FileText size={16} />
@@ -117,8 +128,8 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors",
               activeTab === "recommended"
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50 bg-card",
             )}
           >
             <Heart size={16} />
@@ -128,7 +139,7 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
       </div>
 
       {/* Content */}
-      <div className="px-6 pb-6">
+      <div className="flex-1 overflow-y-auto px-6 pb-6">
         {activeTab === "my-proposals" && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -136,7 +147,7 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
               <span className="text-sm text-muted-foreground">{myProposals.length}개</span>
             </div>
             {myProposals.map((proposal) => (
-              <ProposalCard key={proposal.id} proposal={proposal} />
+              <ProposalCard key={proposal.id} proposal={proposal} onCardClick={handleShowPostDetail} />
             ))}
           </div>
         )}
@@ -148,21 +159,25 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
               <span className="text-sm text-muted-foreground">{recommendedProposals.length}개</span>
             </div>
             {recommendedProposals.map((proposal) => (
-              <ProposalCard key={proposal.id} proposal={proposal} />
+              <ProposalCard key={proposal.id} proposal={proposal} onCardClick={handleShowPostDetail} />
             ))}
           </div>
         )}
       </div>
 
       {/* Action Buttons */}
-      <div className="px-6 pb-8 space-y-3">
-        <Button variant="outline" className="w-full justify-start gap-3 h-12 bg-transparent" onClick={onLogout}>
+      <div className="px-6 pb-8 space-y-3 mt-auto">
+        <Button
+          variant="outline"
+          className="w-full justify-start gap-3 h-12 bg-card border-border hover:bg-muted"
+          onClick={onLogout}
+        >
           <LogOut size={20} />
           로그아웃
         </Button>
         <Button
           variant="outline"
-          className="w-full justify-start gap-3 h-12 text-destructive border-destructive/30 hover:bg-destructive/5 bg-transparent"
+          className="w-full justify-start gap-3 h-12 text-destructive border-destructive/30 hover:bg-destructive/5 bg-card"
           onClick={handleDeleteAccount}
         >
           <UserX size={20} />
@@ -175,40 +190,32 @@ export function ProfileScreen({ onLogout }: ProfileScreenProps) {
 
 interface ProposalCardProps {
   proposal: Proposal
+  onCardClick: (postId: string) => void
 }
 
-function ProposalCard({ proposal }: ProposalCardProps) {
+function ProposalCard({ proposal, onCardClick }: ProposalCardProps) {
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-0">
-        <div className="flex gap-4 p-4">
-          <div className="relative">
-            <img
-              src={proposal.image || "/placeholder.svg"}
-              alt={proposal.title}
-              className="w-20 h-20 object-cover rounded-lg"
-            />
-            <div className="absolute -top-1 -right-1">
-              <StatusBadge status={proposal.status} size="sm" />
-            </div>
+    <Card
+      className="overflow-hidden cursor-pointer transition-all hover:shadow-md hover:bg-muted/50"
+      onClick={() => onCardClick(proposal.id)}
+    >
+      <CardContent className="p-4">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-semibold text-sm leading-tight line-clamp-2 pr-2">{proposal.title}</h3>
+          <StatusBadge status={proposal.status} size="sm" />
+        </div>
+
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+          <MapPin size={12} />
+          <span className="truncate">{proposal.location}</span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <ThumbsUp size={12} />
+            <span>추천 {proposal.recommendCount}</span>
           </div>
-
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm leading-tight mb-1 line-clamp-2">{proposal.title}</h3>
-
-            <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-              <MapPin size={12} />
-              <span className="truncate">{proposal.location}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <Users size={12} />
-                <span>{proposal.recommendCount}명 추천</span>
-              </div>
-              <span className="text-xs text-muted-foreground">{proposal.createdAt}</span>
-            </div>
-          </div>
+          <span className="text-xs text-muted-foreground">{proposal.createdAt}</span>
         </div>
       </CardContent>
     </Card>
@@ -222,7 +229,7 @@ interface StatusBadgeProps {
 
 function StatusBadge({ status, size = "default" }: StatusBadgeProps) {
   const iconSize = size === "sm" ? 10 : 12
-  const className = size === "sm" ? "text-xs px-1.5 py-0.5" : "text-xs px-2 py-1"
+  const className = size === "sm" ? "text-xs px-1.5 py-0.5 whitespace-nowrap" : "text-xs px-2 py-1 whitespace-nowrap"
 
   if (status === "recruiting") {
     return (
@@ -243,3 +250,4 @@ function StatusBadge({ status, size = "default" }: StatusBadgeProps) {
     </Badge>
   )
 }
+

@@ -1,13 +1,12 @@
 "use client"
 
 import type React from "react"
-
+import Image from "next/image"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Train } from "lucide-react"
 
 interface LoginScreenProps {
   onLogin: (success: boolean) => void
@@ -36,14 +35,11 @@ export function LoginScreen({ onLogin, onGoToRegister }: LoginScreenProps) {
   }
 
   return (
-    // min-h-screen을 h-full로 변경하여 부모 컨테이너에 맞춤
-    <div className="h-full bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-0 shadow-none">
+    <div className="flex h-full w-full items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <Train size={32} className="text-primary" />
-            </div>
+            <Image src="/logo.png" alt="Eco Rail Logo" width={80} height={80} />
           </div>
           <CardTitle className="text-2xl">로그인</CardTitle>
         </CardHeader>
@@ -87,3 +83,4 @@ export function LoginScreen({ onLogin, onGoToRegister }: LoginScreenProps) {
     </div>
   )
 }
+

@@ -5,9 +5,9 @@
 
 :root {
   /* Updated color tokens to match Korean railway app design brief */
-  --background: oklch(1 0 0); /* #ffffff - Clean white background */
+  --background: oklch(1, 0, 0); /* #f0fdf4 - Light green background */
   --foreground: oklch(0.278 0 0); /* #374151 - Main text color */
-  --card: oklch(0.984 0.024 142.5); /* #f0fdf4 - Light green card background */
+  --card: oklch(1 0 0); /* #ffffff - White card background */
   --card-foreground: oklch(0.278 0 0); /* #374151 - Card text color */
   --popover: oklch(1 0 0); /* #ffffff - Popover background */
   --popover-foreground: oklch(0.278 0 0); /* #374151 - Popover text */
@@ -22,7 +22,7 @@
   --destructive: oklch(0.577 0.245 27.325); /* #e53e3e - Destructive actions */
   --destructive-foreground: oklch(1 0 0); /* #ffffff - Text on destructive */
   --border: oklch(0.922 0.013 197.137); /* #e5e7eb - Border color */
-  --input: oklch(0.984 0.024 142.5); /* #f0fdf4 - Input background */
+  --input: oklch(1 0 0); /* #ffffff - Input background */
   --ring: oklch(0.506 0.177 142.38 / 0.5); /* Primary with opacity for focus */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -130,3 +130,4 @@
     @apply bg-background text-foreground;
   }
 }
+

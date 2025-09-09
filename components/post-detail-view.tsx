@@ -349,31 +349,28 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
               <div className="prose prose-sm max-w-none">
                 <p className="text-foreground whitespace-pre-line leading-relaxed">{post.content}</p>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Like/Dislike Section */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-4">
-                <Button
-                  variant={userLiked ? "default" : "outline"}
-                  size="sm"
-                  onClick={handleLike}
-                  className="flex items-center gap-2"
-                >
-                  <ThumbsUp size={16} />
-                  <span>{post.likes + (userLiked ? 1 : 0)}</span>
-                </Button>
-                <Button
-                  variant={userDisliked ? "destructive" : "outline"}
-                  size="sm"
-                  onClick={handleDislike}
-                  className="flex items-center gap-2"
-                >
-                  <ThumbsDown size={16} />
-                  <span>{post.dislikes + (userDisliked ? 1 : 0)}</span>
-                </Button>
+              <div className="border-t border-border mt-6 pt-4">
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant={userLiked ? "default" : "outline"}
+                    size="sm"
+                    onClick={handleLike}
+                    className="flex items-center gap-2"
+                  >
+                    <ThumbsUp size={16} />
+                    <span>{post.likes + (userLiked ? 1 : 0)}</span>
+                  </Button>
+                  <Button
+                    variant={userDisliked ? "destructive" : "outline"}
+                    size="sm"
+                    onClick={handleDislike}
+                    className="flex items-center gap-2"
+                  >
+                    <ThumbsDown size={16} />
+                    <span>{post.dislikes + (userDisliked ? 1 : 0)}</span>
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

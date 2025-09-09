@@ -1,48 +1,48 @@
-import { Train } from "lucide-react"
+import Image from "next/image"
 
 export function SplashScreen() {
   return (
-    <div
-      className="h-full flex items-center justify-center relative"
-      style={{
-        background: "linear-gradient(135deg, #15803d 0%, #84cc16 100%)",
-      }}
-    >
-      <div className="text-center relative z-10">
-        <div className="mb-8 flex justify-center">
-          <div className="p-6 bg-white/20 rounded-full backdrop-blur-sm">
-            <Train size={64} style={{ color: "#ffffff" }} />
+    <div className="flex h-full items-center justify-center bg-background">
+      <div
+        className="relative flex h-full w-full flex-col items-center justify-center"
+        style={{
+          background: "linear-gradient(135deg, #f0fdf4 0%, #e5e7eb 100%)",
+        }}
+      >
+        <div className="text-center relative z-10">
+          <div className="mb-8 flex justify-center">
+            <Image
+              src="/logo.png"
+              alt="Eco Rail Logo"
+              width={128}
+              height={128}
+              className="rounded-full"
+            />
           </div>
-        </div>
-        <h1
-          className="text-3xl font-bold mb-2"
-          style={{
-            color: "#ffffff",
-            textShadow: "0 2px 4px rgba(0,0,0,0.3)",
-          }}
-        >
-          철도 유휴부지
-        </h1>
-        <p
-          className="text-xl"
-          style={{
-            color: "#ffffff",
-            opacity: 0.9,
-            textShadow: "0 1px 2px rgba(0,0,0,0.2)",
-          }}
-        >
-          활용 플랫폼
-        </p>
-        <div className="mt-8">
-          <div
-            className="w-8 h-8 rounded-full animate-spin mx-auto"
+          <h1
+            className="text-3xl font-bold mb-2 text-primary"
             style={{
-              border: "4px solid rgba(255,255,255,0.3)",
-              borderTop: "4px solid #ffffff",
+              textShadow: "0 2px 4px rgba(0,0,0,0.1)",
             }}
-          ></div>
+          >
+            철도 유휴부지
+          </h1>
+          <p
+            className="text-xl text-primary/80"
+            style={{
+              textShadow: "0 1px 2px rgba(0,0,0,0.1)",
+            }}
+          >
+            활용 플랫폼
+          </p>
+          <div className="mt-8">
+            <div
+              className="w-8 h-8 rounded-full animate-spin mx-auto border-4 border-primary/20 border-t-primary"
+            ></div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
+

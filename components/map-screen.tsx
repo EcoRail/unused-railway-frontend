@@ -152,7 +152,7 @@ export function MapScreen() {
           <div className="flex-1 relative">
             <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="어디서 업무 검색"
+              placeholder="내 근처 공간 찾기"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setIsSearchFocused(true)}
@@ -160,9 +160,6 @@ export function MapScreen() {
               className="pl-10 pr-4"
             />
           </div>
-          <Button variant="ghost" size="icon" className="flex-shrink-0">
-            <User size={20} />
-          </Button>
         </div>
 
         {/* Filter Buttons */}

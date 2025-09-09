@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Upload, X, MapPin } from "lucide-react"
+import { ArrowLeft, MapPin } from "lucide-react"
 
 interface PostCreationFormProps {
   locationId: string
@@ -20,7 +20,6 @@ interface PostCreationFormProps {
 interface PostFormData {
   title: string
   content: string
-  image?: File
 }
 
 export function PostCreationForm({ locationId, locationName, onBack, onSubmit }: PostCreationFormProps) {
@@ -28,26 +27,7 @@ export function PostCreationForm({ locationId, locationName, onBack, onSubmit }:
     title: "",
     content: "",
   })
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      setSelectedImage(file)
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const handleRemoveImage = () => {
-    setSelectedImage(null)
-    setImagePreview(null)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -59,17 +39,10 @@ export function PostCreationForm({ locationId, locationName, onBack, onSubmit }:
     setIsSubmitting(true)
 
     try {
-      const submitData: PostFormData = {
-        ...formData,
-        image: selectedImage || undefined,
-      }
-
-      await onSubmit(submitData)
+      await onSubmit(formData)
 
       // Reset form
       setFormData({ title: "", content: "" })
-      setSelectedImage(null)
-      setImagePreview(null)
     } catch (error) {
       console.error("Failed to submit post:", error)
     } finally {
@@ -130,51 +103,6 @@ export function PostCreationForm({ locationId, locationName, onBack, onSubmit }:
               maxLength={1000}
             />
             <div className="text-xs text-muted-foreground text-right">{formData.content.length}/1000</div>
-          </div>
-
-          {/* Image Upload */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">이미지 (선택사항)</Label>
-
-            {imagePreview ? (
-              <div className="relative">
-                <img
-                  src={imagePreview || "/placeholder.svg"}
-                  alt="Preview"
-                  className="w-full h-48 object-cover rounded-lg border border-border"
-                />
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon"
-                  className="absolute top-2 right-2 bg-white/90 hover:bg-white"
-                  onClick={handleRemoveImage}
-                >
-                  <X size={16} />
-                </Button>
-              </div>
-            ) : (
-              <div className="border-2 border-dashed border-border rounded-lg p-6">
-                <div className="text-center">
-                  <Upload size={32} className="mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground mb-2">
-                    이미지를 업로드하여 제안을 더욱 생생하게 표현해보세요
-                  </p>
-                  <Label htmlFor="image-upload" className="cursor-pointer">
-                    <Button type="button" variant="outline" size="sm" asChild>
-                      <span>이미지 선택</span>
-                    </Button>
-                  </Label>
-                  <input
-                    id="image-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageSelect}
-                    className="hidden"
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Guidelines */}

@@ -55,8 +55,8 @@ export default function Home() {
   }
 
   return (
-    <div className="flex items-center justify-center h-full bg-muted/50">
-      <div className="w-full h-full max-w-sm bg-background shadow-2xl overflow-hidden relative md:h-[90vh] md:max-h-[800px] md:rounded-2xl">
+    <div className="flex items-center justify-center h-full bg-white">
+      <div className="w-full h-full max-w-md bg-white shadow-2xl overflow-hidden relative md:h-[90vh] md:max-h-[800px] md:rounded-2xl">
         {renderContent()}
       </div>
     </div>

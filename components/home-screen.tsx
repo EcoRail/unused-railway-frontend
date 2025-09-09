@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Clock, Users, CheckCircle, AlertCircle } from "lucide-react"
+import { MapPin, Clock, CheckCircle, AlertCircle, ThumbsUp } from "lucide-react"
 import { PostDetailView } from "./post-detail-view"
 
 interface Proposal {
@@ -58,7 +58,6 @@ const mockProposals: Proposal[] = [
 export function HomeScreen() {
   const [proposals] = useState<Proposal[]>(mockProposals)
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null)
-  const totalProposals = proposals.length
 
   const handleShowPostDetail = (postId: string) => {
     setSelectedPostId(postId)
@@ -78,12 +77,8 @@ export function HomeScreen() {
       <div className="bg-card border-b border-border px-4 py-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">장소 협의 및 계획</h1>
-            <p className="text-muted-foreground mt-1">지역 주민들의 참여 제안</p>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-primary">{totalProposals}</div>
-            <div className="text-sm text-muted-foreground">총 제안</div>
+            <h1 className="text-2xl font-bold text-foreground">Rail Station</h1>
+            <p className="text-muted-foreground mt-1">이웃이 제안한 공간을 둘러보세요!</p>
           </div>
         </div>
       </div>
@@ -111,16 +106,7 @@ function ProposalCard({ proposal, onCardClick }: ProposalCardProps) {
   return (
     <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleCardClick}>
       <CardContent className="p-4">
-        <div className="flex gap-4">
-          {/* Image */}
-          <div className="flex-shrink-0">
-            <img
-              src={proposal.image || "/placeholder.svg"}
-              alt={proposal.title}
-              className="w-20 h-20 rounded-lg object-cover"
-            />
-          </div>
-
+        <div className="flex flex-col">
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-2">
@@ -142,11 +128,9 @@ function ProposalCard({ proposal, onCardClick }: ProposalCardProps) {
             <p className="text-sm text-foreground mb-3 line-clamp-2">{proposal.description}</p>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1 text-sm">
-                <Users size={16} className="text-muted-foreground" />
-                <span className="font-medium text-foreground">
-                  {proposal.recommendCount}/{proposal.totalSlots}명
-                </span>
+              <div className="flex items-center gap-1 text-sm text-primary">
+                <ThumbsUp size={16} />
+                <span className="font-medium">추천 {proposal.recommendCount}</span>
               </div>
             </div>
           </div>
