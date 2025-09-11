@@ -40,30 +40,28 @@ export function MapScreen() {
   const [loadingMessage, setLoadingMessage] = useState("지도 데이터를 불러오는 중...")
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
+  const markersRef = useRef<any[]>([]) // 마커 인스턴스를 관리하기 위한 ref
 
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [createFormLocation, setCreateFormLocation] = useState<MapLocation | null>(null)
 
-  // 지도 초기화 및 데이터 로딩을 위한 통합 useEffect
+  // 지도 초기화, 데이터 로딩 및 지오코딩을 위한 useEffect
   useEffect(() => {
-    // 카카오맵 스크립트가 로드되지 않았다면 아무것도 하지 않음
     if (!window.kakao || !window.kakao.maps) {
       setLoadingMessage("카카오맵 스크립트를 불러올 수 없습니다.")
       setIsLoading(false)
       return
     }
 
-    // kakao.maps.load를 사용하여 스크립트 로딩 완료 후 모든 관련 작업 수행
-    window.kakao.maps.load(async () => {
-      if (!mapContainer.current) return
-
-      // 1. 지도 생성
-      const options = {
-        center: new window.kakao.maps.LatLng(36.3504119, 127.3845475), // 대전 중심
-        level: 8,
+    const initAndLoadData = async () => {
+      // 1. 지도 생성 (아직 생성되지 않았을 경우에만)
+      if (mapContainer.current && !mapInstanceRef.current) {
+        const options = {
+          center: new window.kakao.maps.LatLng(36.3504119, 127.3845475), // 대전 중심
+          level: 8,
+        }
+        mapInstanceRef.current = new window.kakao.maps.Map(mapContainer.current, options)
       }
-      const map = new window.kakao.maps.Map(mapContainer.current, options)
-      mapInstanceRef.current = map
 
       // 2. CSV 데이터 불러오기 및 처리
       try {
@@ -100,6 +98,7 @@ export function MapScreen() {
         const geocodePromises = filteredData.map(
           (site) =>
             new Promise<MapLocation | null>((resolve) => {
+              // Kakao API의 요청 제한을 피하기 위해 약간의 지연을 줍니다.
               setTimeout(() => {
                 geocoder.addressSearch(site["재산 소재지"], (result: any, status: any) => {
                   if (status === window.kakao.maps.services.Status.OK && result[0]) {
@@ -122,30 +121,56 @@ export function MapScreen() {
         )
 
         const geocodedResults = (await Promise.all(geocodePromises)).filter(Boolean) as MapLocation[]
-        setLocations(geocodedResults)
 
-        // 4. 지도에 마커 표시
         if (geocodedResults.length > 0) {
-          geocodedResults.forEach((location) => {
-            const markerPosition = new window.kakao.maps.LatLng(location.lat, location.lng)
-            const marker = new window.kakao.maps.Marker({ position: markerPosition })
-            marker.setMap(map)
-            window.kakao.maps.event.addListener(marker, "click", () => {
-              setSelectedLocation(location)
-              map.panTo(markerPosition)
-            })
-          })
+          setLocations(geocodedResults)
         } else {
           setLoadingMessage("주소를 좌표로 변환하는데 실패했습니다.")
+          setIsLoading(false)
         }
       } catch (error) {
         console.error("데이터 처리 중 오류 발생:", error)
         setLoadingMessage("데이터를 처리하는 중 오류가 발생했습니다.")
-      } finally {
         setIsLoading(false)
       }
-    })
+    }
+
+    window.kakao.maps.load(initAndLoadData)
   }, []) // 이 useEffect는 컴포넌트가 처음 마운트될 때 한 번만 실행됩니다.
+
+  // `locations` 상태가 변경될 때 마커를 지도에 표시하는 useEffect
+  useEffect(() => {
+    const map = mapInstanceRef.current
+    if (!map || !window.kakao) return
+
+    // 1. 기존에 생성된 마커가 있다면 지도에서 제거
+    markersRef.current.forEach((marker) => marker.setMap(null))
+    markersRef.current = []
+
+    if (locations.length > 0) {
+        // 2. 새로운 `locations` 데이터로 마커를 생성하고 지도에 추가
+        const newMarkers: any[] = []
+        locations.forEach((location) => {
+          const markerPosition = new window.kakao.maps.LatLng(location.lat, location.lng)
+          const marker = new window.kakao.maps.Marker({ position: markerPosition })
+
+          marker.setMap(map)
+
+          // 마커에 클릭 이벤트 리스너 추가
+          window.kakao.maps.event.addListener(marker, "click", () => {
+            setSelectedLocation(location)
+            map.panTo(markerPosition) // 클릭된 마커 위치로 지도 중심 이동
+          })
+
+          newMarkers.push(marker)
+        })
+        // 생성된 마커들을 ref에 저장하여 나중에 관리할 수 있도록 함
+        markersRef.current = newMarkers
+    }
+    
+    // 위치 데이터가 있거나, 없을 경우(빈 배열) 모두 로딩 상태를 종료함
+    setIsLoading(false)
+  }, [locations]) // `locations` 배열이 변경될 때만 이 effect가 다시 실행됩니다.
 
   const handleCreateProposal = (locationId: string) => {
     const location = locations.find((loc) => loc.id === locationId)
@@ -188,7 +213,7 @@ export function MapScreen() {
           <div className="flex items-center gap-3">
             <div className="flex-1 relative">
               <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="장소 또는 제안 검색" className="pl-10 pr-4" disabled />
+              <Input placeholder="장소 검색" className="pl-10 pr-4" disabled />
             </div>
           </div>
         </div>
