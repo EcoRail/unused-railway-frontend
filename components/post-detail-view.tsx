@@ -23,7 +23,12 @@ import {
   Edit2,
   Trash2,
 } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,7 +66,6 @@ interface PostDetail {
   recommendCount: number
   totalSlots: number
   status: "recruiting" | "completed"
-  image: string
   likes: number
   dislikes: number
   comments: Comment[]
@@ -88,7 +92,6 @@ const mockPostDetail: PostDetail = {
   recommendCount: 8,
   totalSlots: 15,
   status: "recruiting",
-  image: "/community-garden-with-vegetables-and-flowers.jpg",
   likes: 24,
   dislikes: 2,
   comments: [
@@ -141,9 +144,12 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
   const [editingComment, setEditingComment] = useState<string | null>(null)
   const [editContent, setEditContent] = useState("")
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [commentToDelete, setCommentToDelete] = useState<{ id: string; isReply: boolean; parentId?: string } | null>(
-    null,
-  )
+  const [
+    commentToDelete,
+    setCommentToDelete,
+  ] = useState<{ id: string; isReply: boolean; parentId?: string } | null>(null)
+  const [isPostDeleteDialogOpen, setIsPostDeleteDialogOpen] = useState(false)
+  const currentUser = "김철수" // Assume the current user is Kim Chul-soo for author check
 
   const handleLike = () => {
     setUserLiked(!userLiked)
@@ -189,7 +195,9 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
       setPost((prev) => ({
         ...prev,
         comments: prev.comments.map((comment) =>
-          comment.id === parentId ? { ...comment, replies: [...(comment.replies || []), newReply] } : comment,
+          comment.id === parentId
+            ? { ...comment, replies: [...(comment.replies || []), newReply] }
+            : comment,
         ),
       }))
       setReplyContent("")
@@ -197,7 +205,11 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
     }
   }
 
-  const handleLikeComment = (commentId: string, isReply = false, parentId?: string) => {
+  const handleLikeComment = (
+    commentId: string,
+    isReply = false,
+    parentId?: string,
+  ) => {
     setPost((prev) => ({
       ...prev,
       comments: prev.comments.map((comment) => {
@@ -226,12 +238,21 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
     }))
   }
 
-  const handleEditComment = (commentId: string, currentContent: string, isReply = false, parentId?: string) => {
+  const handleEditComment = (
+    commentId: string,
+    currentContent: string,
+    isReply = false,
+    parentId?: string,
+  ) => {
     setEditingComment(commentId)
     setEditContent(currentContent)
   }
 
-  const handleSaveEdit = (commentId: string, isReply = false, parentId?: string) => {
+  const handleSaveEdit = (
+    commentId: string,
+    isReply = false,
+    parentId?: string,
+  ) => {
     if (editContent.trim()) {
       setPost((prev) => ({
         ...prev,
@@ -240,7 +261,9 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
             return {
               ...comment,
               replies: comment.replies?.map((reply) =>
-                reply.id === commentId ? { ...reply, content: editContent } : reply,
+                reply.id === commentId
+                  ? { ...reply, content: editContent }
+                  : reply,
               ),
             }
           } else if (comment.id === commentId) {
@@ -259,7 +282,11 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
     setEditContent("")
   }
 
-  const handleDeleteComment = (commentId: string, isReply = false, parentId?: string) => {
+  const handleDeleteComment = (
+    commentId: string,
+    isReply = false,
+    parentId?: string,
+  ) => {
     setCommentToDelete({ id: commentId, isReply, parentId })
     setDeleteDialogOpen(true)
   }
@@ -270,10 +297,16 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
         ...prev,
         comments: prev.comments
           .map((comment) => {
-            if (commentToDelete.isReply && comment.id === commentToDelete.parentId) {
+            if (
+              commentToDelete.isReply &&
+              comment.id === commentToDelete.parentId
+            ) {
               return {
                 ...comment,
-                replies: comment.replies?.filter((reply) => reply.id !== commentToDelete.id) || [],
+                replies:
+                  comment.replies?.filter(
+                    (reply) => reply.id !== commentToDelete.id,
+                  ) || [],
               }
             }
             return comment
@@ -285,11 +318,23 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
     setCommentToDelete(null)
   }
 
-  const canEditComment = (author: string) => author === "나"
+  const canEditOrDelete = (author: string) => author === currentUser
 
   const totalComments = post.comments.reduce((total, comment) => {
     return total + 1 + (comment.replies?.length || 0)
   }, 0)
+
+  const handlePostDelete = () => {
+    setIsPostDeleteDialogOpen(true)
+  }
+
+  const handleConfirmPostDelete = () => {
+    // In a real app, you would make an API call to delete the post.
+    // Here we'll just go back to the previous screen.
+    console.log(`Deleting post with ID: ${post.id}`)
+    setIsPostDeleteDialogOpen(false)
+    onBack()
+  }
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -306,12 +351,38 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-6">
-          {/* Post Header */}
+          {/* Post Content */}
           <Card>
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
-                <h2 className="text-xl font-bold text-foreground leading-tight">{post.title}</h2>
-                <StatusBadge status={post.status} />
+                <h2 className="text-xl font-bold text-foreground leading-tight">
+                  {post.title}
+                </h2>
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  {canEditOrDelete(post.author) && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-auto p-1">
+                          <MoreHorizontal size={14} />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <Edit2 size={14} className="mr-2" />
+                          수정
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={handlePostDelete}
+                          className="text-destructive"
+                        >
+                          <Trash2 size={14} className="mr-2" />
+                          삭제
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                  <StatusBadge status={post.status} />
+                </div>
               </div>
 
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
@@ -325,9 +396,7 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                 </div>
                 <div className="flex items-center gap-1">
                   <Users size={14} />
-                  <span>
-                    {post.recommendCount}/{post.totalSlots}명
-                  </span>
+                  <span>{post.recommendCount}명 추천</span>
                 </div>
               </div>
 
@@ -335,44 +404,39 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                 <Avatar className="w-8 h-8">
                   <AvatarFallback>{post.author[0]}</AvatarFallback>
                 </Avatar>
-                <span className="font-medium text-foreground">{post.author}</span>
+                <span className="font-medium text-foreground">
+                  {post.author}
+                </span>
               </div>
-
-              {post.image && (
-                <img
-                  src={post.image || "/placeholder.svg"}
-                  alt={post.title}
-                  className="w-full h-48 rounded-lg object-cover mb-4"
-                />
-              )}
 
               <div className="prose prose-sm max-w-none">
-                <p className="text-foreground whitespace-pre-line leading-relaxed">{post.content}</p>
-              </div>
-
-              <div className="border-t border-border mt-6 pt-4">
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant={userLiked ? "default" : "outline"}
-                    size="sm"
-                    onClick={handleLike}
-                    className="flex items-center gap-2"
-                  >
-                    <ThumbsUp size={16} />
-                    <span>{post.likes + (userLiked ? 1 : 0)}</span>
-                  </Button>
-                  <Button
-                    variant={userDisliked ? "destructive" : "outline"}
-                    size="sm"
-                    onClick={handleDislike}
-                    className="flex items-center gap-2"
-                  >
-                    <ThumbsDown size={16} />
-                    <span>{post.dislikes + (userDisliked ? 1 : 0)}</span>
-                  </Button>
-                </div>
+                <p className="text-foreground whitespace-pre-line leading-relaxed">
+                  {post.content}
+                </p>
               </div>
             </CardContent>
+            <div className="border-t border-border p-4">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant={userLiked ? "default" : "outline"}
+                  size="sm"
+                  onClick={handleLike}
+                  className="flex items-center gap-2"
+                >
+                  <ThumbsUp size={16} />
+                  <span>{post.likes + (userLiked ? 1 : 0)}</span>
+                </Button>
+                <Button
+                  variant={userDisliked ? "destructive" : "outline"}
+                  size="sm"
+                  onClick={handleDislike}
+                  className="flex items-center gap-2"
+                >
+                  <ThumbsDown size={16} />
+                  <span>{post.dislikes + (userDisliked ? 1 : 0)}</span>
+                </Button>
+              </div>
+            </div>
           </Card>
 
           {/* Comments Section */}
@@ -396,7 +460,11 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                     onChange={(e) => setNewComment(e.target.value)}
                     className="min-h-[80px] resize-none"
                   />
-                  <Button size="sm" onClick={handleSubmitComment} disabled={!newComment.trim()}>
+                  <Button
+                    size="sm"
+                    onClick={handleSubmitComment}
+                    disabled={!newComment.trim()}
+                  >
                     <Send size={16} />
                   </Button>
                 </div>
@@ -414,18 +482,30 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-medium text-sm">{comment.author}</span>
-                            <span className="text-xs text-muted-foreground">{comment.timeAgo}</span>
+                            <span className="font-medium text-sm">
+                              {comment.author}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {comment.timeAgo}
+                            </span>
                           </div>
-                          {canEditComment(comment.author) && (
+                          {canEditOrDelete(comment.author) && (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-auto p-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-auto p-1"
+                                >
                                   <MoreHorizontal size={14} />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleEditComment(comment.id, comment.content)}>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleEditComment(comment.id, comment.content)
+                                  }
+                                >
                                   <Edit2 size={14} className="mr-2" />
                                   수정
                                 </DropdownMenuItem>
@@ -449,16 +529,25 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                               className="min-h-[60px] resize-none text-sm"
                             />
                             <div className="flex gap-2">
-                              <Button size="sm" onClick={() => handleSaveEdit(comment.id)}>
+                              <Button
+                                size="sm"
+                                onClick={() => handleSaveEdit(comment.id)}
+                              >
                                 저장
                               </Button>
-                              <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleCancelEdit}
+                              >
                                 취소
                               </Button>
                             </div>
                           </div>
                         ) : (
-                          <p className="text-sm text-foreground leading-relaxed mb-2">{comment.content}</p>
+                          <p className="text-sm text-foreground leading-relaxed mb-2">
+                            {comment.content}
+                          </p>
                         )}
 
                         {/* Comment Actions */}
@@ -468,15 +557,30 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleLikeComment(comment.id)}
-                              className={`h-auto p-1 ${comment.isLiked ? "text-red-500" : "text-muted-foreground"}`}
+                              className={`h-auto p-1 ${
+                                comment.isLiked
+                                  ? "text-red-500"
+                                  : "text-muted-foreground"
+                              }`}
                             >
-                              <Heart size={14} className={comment.isLiked ? "fill-current" : ""} />
-                              <span className="ml-1 text-xs">{comment.likes}</span>
+                              <Heart
+                                size={14}
+                                className={
+                                  comment.isLiked ? "fill-current" : ""
+                                }
+                              />
+                              <span className="ml-1 text-xs">
+                                {comment.likes}
+                              </span>
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                              onClick={() =>
+                                setReplyingTo(
+                                  replyingTo === comment.id ? null : comment.id,
+                                )
+                              }
                               className="h-auto p-1 text-muted-foreground"
                             >
                               <Reply size={14} />
@@ -489,7 +593,9 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                         {replyingTo === comment.id && (
                           <div className="flex gap-2 mt-3">
                             <Avatar className="w-6 h-6">
-                              <AvatarFallback className="text-xs">나</AvatarFallback>
+                              <AvatarFallback className="text-xs">
+                                나
+                              </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 flex gap-2">
                               <Textarea
@@ -517,30 +623,53 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                         {comment.replies.map((reply) => (
                           <div key={reply.id} className="flex gap-3">
                             <Avatar className="w-6 h-6">
-                              <AvatarFallback className="text-xs">{reply.author[0]}</AvatarFallback>
+                              <AvatarFallback className="text-xs">
+                                {reply.author[0]}
+                              </AvatarFallback>
                             </Avatar>
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-1">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-medium text-xs">{reply.author}</span>
-                                  <span className="text-xs text-muted-foreground">{reply.timeAgo}</span>
+                                  <span className="font-medium text-xs">
+                                    {reply.author}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {reply.timeAgo}
+                                  </span>
                                 </div>
-                                {canEditComment(reply.author) && (
+                                {canEditOrDelete(reply.author) && (
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                      <Button variant="ghost" size="sm" className="h-auto p-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-auto p-1"
+                                      >
                                         <MoreHorizontal size={12} />
                                       </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
                                       <DropdownMenuItem
-                                        onClick={() => handleEditComment(reply.id, reply.content, true, comment.id)}
+                                        onClick={() =>
+                                          handleEditComment(
+                                            reply.id,
+                                            reply.content,
+                                            true,
+                                            comment.id,
+                                          )
+                                        }
                                       >
                                         <Edit2 size={12} className="mr-2" />
                                         수정
                                       </DropdownMenuItem>
                                       <DropdownMenuItem
-                                        onClick={() => handleDeleteComment(reply.id, true, comment.id)}
+                                        onClick={() =>
+                                          handleDeleteComment(
+                                            reply.id,
+                                            true,
+                                            comment.id,
+                                          )
+                                        }
                                         className="text-destructive"
                                       >
                                         <Trash2 size={12} className="mr-2" />
@@ -555,20 +684,37 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                                 <div className="space-y-2">
                                   <Textarea
                                     value={editContent}
-                                    onChange={(e) => setEditContent(e.target.value)}
+                                    onChange={(e) =>
+                                      setEditContent(e.target.value)
+                                    }
                                     className="min-h-[50px] resize-none text-xs"
                                   />
                                   <div className="flex gap-2">
-                                    <Button size="sm" onClick={() => handleSaveEdit(reply.id, true, comment.id)}>
+                                    <Button
+                                      size="sm"
+                                      onClick={() =>
+                                        handleSaveEdit(
+                                          reply.id,
+                                          true,
+                                          comment.id,
+                                        )
+                                      }
+                                    >
                                       저장
                                     </Button>
-                                    <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={handleCancelEdit}
+                                    >
                                       취소
                                     </Button>
                                   </div>
                                 </div>
                               ) : (
-                                <p className="text-xs text-foreground leading-relaxed mb-2">{reply.content}</p>
+                                <p className="text-xs text-foreground leading-relaxed mb-2">
+                                  {reply.content}
+                                </p>
                               )}
 
                               {/* Reply Actions */}
@@ -577,11 +723,28 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => handleLikeComment(reply.id, true, comment.id)}
-                                    className={`h-auto p-1 ${reply.isLiked ? "text-red-500" : "text-muted-foreground"}`}
+                                    onClick={() =>
+                                      handleLikeComment(
+                                        reply.id,
+                                        true,
+                                        comment.id,
+                                      )
+                                    }
+                                    className={`h-auto p-1 ${
+                                      reply.isLiked
+                                        ? "text-red-500"
+                                        : "text-muted-foreground"
+                                    }`}
                                   >
-                                    <Heart size={12} className={reply.isLiked ? "fill-current" : ""} />
-                                    <span className="ml-1 text-xs">{reply.likes}</span>
+                                    <Heart
+                                      size={12}
+                                      className={
+                                        reply.isLiked ? "fill-current" : ""
+                                      }
+                                    />
+                                    <span className="ml-1 text-xs">
+                                      {reply.likes}
+                                    </span>
                                   </Button>
                                 </div>
                               )}
@@ -598,6 +761,31 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
         </div>
       </div>
 
+      {/* Post Delete Confirmation Dialog */}
+      <AlertDialog
+        open={isPostDeleteDialogOpen}
+        onOpenChange={setIsPostDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>제안 삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              이 제안을 정말로 삭제하시겠습니까? 삭제된 제안은 복구할 수
+              없습니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmPostDelete}
+              className="bg-destructive text-destructive-foreground"
+            >
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -608,7 +796,10 @@ export function PostDetailView({ postId, onBack }: PostDetailProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground"
+            >
               삭제
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -625,7 +816,10 @@ interface StatusBadgeProps {
 function StatusBadge({ status }: StatusBadgeProps) {
   if (status === "recruiting") {
     return (
-      <Badge variant="secondary" className="bg-secondary/20 text-secondary-foreground border-secondary/30">
+      <Badge
+        variant="secondary"
+        className="bg-secondary/20 text-secondary-foreground border-secondary/30"
+      >
         <AlertCircle size={12} className="mr-1" />
         모집중
       </Badge>
@@ -633,9 +827,13 @@ function StatusBadge({ status }: StatusBadgeProps) {
   }
 
   return (
-    <Badge variant="outline" className="bg-muted text-muted-foreground border-muted-foreground/30">
+    <Badge
+      variant="outline"
+      className="bg-muted text-muted-foreground border-muted-foreground/30"
+    >
       <CheckCircle size={12} className="mr-1" />
       완료
     </Badge>
   )
 }
+
