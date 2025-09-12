@@ -5,6 +5,7 @@ import { HomeScreen } from "@/components/home-screen"
 import { MapScreen } from "@/components/map-screen"
 import { ProfileScreen } from "@/components/profile-screen"
 import { BottomNavigation } from "@/components/bottom-navigation"
+import { PostDetailView } from "@/components/post-detail-view"
 
 type Screen = "home" | "map" | "profile"
 
@@ -14,17 +15,31 @@ interface MainAppProps {
 
 export function MainApp({ onLogout }: MainAppProps) {
   const [currentScreen, setCurrentScreen] = useState<Screen>("home")
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null)
+
+  const handleScreenChange = (screen: Screen) => {
+    setSelectedPostId(null)
+    setCurrentScreen(screen)
+  }
 
   const renderScreen = () => {
+    if (selectedPostId !== null) {
+      return (
+        <PostDetailView
+          postId={selectedPostId}
+          onBack={() => setSelectedPostId(null)}
+        />
+      )
+    }
     switch (currentScreen) {
       case "home":
-        return <HomeScreen />
+        return <HomeScreen onPostSelect={setSelectedPostId} />
       case "map":
-        return <MapScreen />
+        return <MapScreen onOpenPost={setSelectedPostId} />
       case "profile":
-        return <ProfileScreen onLogout={onLogout} />
+        return <ProfileScreen onLogout={onLogout} onPostSelect={setSelectedPostId} />
       default:
-        return <HomeScreen />
+        return <HomeScreen onPostSelect={setSelectedPostId} />
     }
   }
 
@@ -34,7 +49,7 @@ export function MainApp({ onLogout }: MainAppProps) {
       <div className="flex-1 overflow-hidden">
         <div className="h-full transition-all duration-300 ease-in-out">{renderScreen()}</div>
       </div>
-      <BottomNavigation currentScreen={currentScreen} onScreenChange={setCurrentScreen} />
+      <BottomNavigation currentScreen={currentScreen} onScreenChange={handleScreenChange} />
     </div>
   )
 }

@@ -33,11 +33,12 @@ interface MapLocation {
   proposals: any[]
 }
 
-export function MapScreen() {
+export function MapScreen({ onOpenPost }: { onOpenPost?: (postId: number) => void }) {
   const [locations, setLocations] = useState<MapLocation[]>([])
   const [selectedLocation, setSelectedLocation] = useState<MapLocation | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingMessage, setLoadingMessage] = useState("지도 데이터를 불러오는 중...")
+  const [query, setQuery] = useState("")
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const markersRef = useRef<any[]>([]) // 마커 인스턴스를 관리하기 위한 ref
@@ -150,7 +151,8 @@ export function MapScreen() {
     if (locations.length > 0) {
         // 2. 새로운 `locations` 데이터로 마커를 생성하고 지도에 추가
         const newMarkers: any[] = []
-        locations.forEach((location) => {
+        const filtered = query.trim() ? locations.filter(l => l.address.includes(query.trim())) : locations
+        filtered.forEach((location) => {
           const markerPosition = new window.kakao.maps.LatLng(location.lat, location.lng)
           const marker = new window.kakao.maps.Marker({ position: markerPosition })
 
@@ -170,11 +172,23 @@ export function MapScreen() {
     
     // 위치 데이터가 있거나, 없을 경우(빈 배열) 모두 로딩 상태를 종료함
     setIsLoading(false)
-  }, [locations]) // `locations` 배열이 변경될 때만 이 effect가 다시 실행됩니다.
+  }, [locations, query]) // `locations`나 검색어 변경 시 실행
 
-  const handleCreateProposal = (locationId: string) => {
+  const handleCreateProposal = async (locationId: string) => {
     const location = locations.find((loc) => loc.id === locationId)
-    if (location) {
+    if (!location) return
+    try {
+      // 주소로 RailwayProperty를 조회해서 정확한 backend id를 얻음
+      const addr = location.address
+      const res = await fetch(`/api/map/properties/?search=${encodeURIComponent(addr)}`.replace('/api','http://127.0.0.1:8000/api'))
+      const data = await res.json()
+      const list = data.results || data
+      const exact = list?.find((p: any) => p.address === addr) || list?.[0]
+      const resolved = exact ? { ...location, id: String(exact.id) } : location
+      setCreateFormLocation(resolved)
+      setShowCreateForm(true)
+      setSelectedLocation(null)
+    } catch (e) {
       setCreateFormLocation(location)
       setShowCreateForm(true)
       setSelectedLocation(null)
@@ -200,12 +214,14 @@ export function MapScreen() {
       {/* 글 작성 화면 */}
       {showCreateForm && createFormLocation && (
         <PostCreationForm
-          locationId={createFormLocation.id}
-          locationName={createFormLocation.address}
-          onBack={handleBackFromForm}
-          onSubmit={handleSubmitProposal}
+          railwayPropertyId={Number(createFormLocation.id)}   // RailwayProperty ID 전달
+          onPostCreated={() => {
+            handleBackFromForm();   // 등록 성공 후 돌아가기
+          }}
+          onCancel={handleBackFromForm}   // ← 취소 버튼 동작 연결
         />
       )}
+
 
       {/* 지도 화면 (숨김 처리) */}
       <div className={cn("flex flex-col h-full", showCreateForm && "hidden")}>
@@ -213,7 +229,7 @@ export function MapScreen() {
           <div className="flex items-center gap-3">
             <div className="flex-1 relative">
               <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="장소 검색" className="pl-10 pr-4" disabled />
+              <Input placeholder="장소 검색 (예: 중구)" className="pl-10 pr-4" value={query} onChange={(e) => setQuery(e.target.value)} />
             </div>
           </div>
         </div>
@@ -235,6 +251,7 @@ export function MapScreen() {
             }}
             onClose={() => setSelectedLocation(null)}
             onCreateProposal={handleCreateProposal}
+            onOpenPost={onOpenPost}
           />
         )}
       </div>
