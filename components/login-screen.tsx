@@ -18,12 +18,41 @@ export function LoginScreen({ onLogin, onGoToRegister }: LoginScreenProps) {
     username: "",
     password: "",
   })
+  const [error, setError] = useState<string | null>(null); // 에러 메시지 상태 추가
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // 여기를 수정했습니다!
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Mock login - in real app, this would call Django backend
-    if (formData.username && formData.password) {
-      onLogin(true)
+    setError(null); // 이전 에러 메시지 초기화
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/auth/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        // 로그인 성공
+        const data = await response.json();
+        console.log("로그인 성공:", data);
+        // 받은 토큰을 localStorage 등에 저장하는 로직 추가
+        localStorage.setItem('accessToken', data.access);
+        localStorage.setItem('refreshToken', data.refresh);
+        onLogin(true); // 로그인 성공 처리
+      } else {
+        // 로그인 실패 (예: 아이디 또는 비밀번호 틀림)
+        const errorData = await response.json();
+        setError(errorData.detail || "아이디 또는 비밀번호가 올바르지 않습니다.");
+        onLogin(false);
+      }
+    } catch (err) {
+      // 네트워크 에러 등
+      console.error("로그인 요청 에러:", err);
+      setError("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+      onLogin(false);
     }
   }
 
@@ -69,6 +98,8 @@ export function LoginScreen({ onLogin, onGoToRegister }: LoginScreenProps) {
                 required
               />
             </div>
+            {/* 에러 메시지 표시 부분 */}
+            {error && <p className="text-sm text-red-500">{error}</p>}
             <Button type="submit" className="w-full">
               로그인
             </Button>
@@ -83,4 +114,3 @@ export function LoginScreen({ onLogin, onGoToRegister }: LoginScreenProps) {
     </div>
   )
 }
-

@@ -1,133 +1,103 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { ArrowLeft, MapPin } from "lucide-react"
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 
 interface PostCreationFormProps {
-  locationId: string
-  locationName: string
-  onBack: () => void
-  onSubmit: (postData: PostFormData) => void
+  railwayPropertyId: number;
+  onPostCreated: () => void;
+  onCancel: () => void;
 }
 
-interface PostFormData {
-  title: string
-  content: string
+// 공통 API 호출 함수
+async function fetchWithAuth(url: string, options: RequestInit = {}) {
+    const token = localStorage.getItem('accessToken');
+    const headers = {
+        'Content-Type': 'application/json',
+        ...options.headers,
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+    return fetch(url, { ...options, headers });
 }
 
-export function PostCreationForm({ locationId, locationName, onBack, onSubmit }: PostCreationFormProps) {
-  const [formData, setFormData] = useState<PostFormData>({
-    title: "",
-    content: "",
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+export function PostCreationForm({ railwayPropertyId, onPostCreated, onCancel }: PostCreationFormProps) {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!formData.title.trim() || !formData.content.trim()) {
-      return
+    console.log("제출 데이터:", {
+      title,
+      content,
+      railway_property: railwayPropertyId,
+    });
+
+    const response = await fetchWithAuth('http://127.0.0.1:8000/api/posts/', {
+      method: 'POST',
+      body: JSON.stringify({
+        title,
+        content,
+        railway_property: railwayPropertyId,
+      }),
+    });
+
+    const data = await response.json();
+    console.log("서버 응답:", response.status, data);
+
+    if (response.ok) {
+      alert('제안이 성공적으로 등록되었습니다.');
+      onPostCreated();
+    } else {
+      setError(
+        data.railway_property
+          ? `잘못된 railway_property ID (${railwayPropertyId})`
+          : '제안 등록에 실패했습니다. 로그인 상태를 확인해주세요.'
+      );
     }
+  };
 
-    setIsSubmitting(true)
-
-    try {
-      await onSubmit(formData)
-
-      // Reset form
-      setFormData({ title: "", content: "" })
-    } catch (error) {
-      console.error("Failed to submit post:", error)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const isFormValid = formData.title.trim() && formData.content.trim()
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      {/* Header */}
-      <div className="bg-card border-b border-border px-4 py-4">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={onBack}>
-            <ArrowLeft size={20} />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-semibold text-foreground">제안 등록</h1>
-            <div className="flex items-center gap-1 mt-1">
-              <MapPin size={14} className="text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">{locationName}</span>
+    <div className="p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>새로운 제안 등록</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="title">제목</Label>
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="제안의 제목을 입력하세요"
+              />
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Form Content */}
-      <div className="flex-1 overflow-y-auto">
-        <form onSubmit={handleSubmit} className="p-4 space-y-6">
-          {/* Title Input */}
-          <div className="space-y-2">
-            <Label htmlFor="title" className="text-sm font-medium">
-              제목 *
-            </Label>
-            <Input
-              id="title"
-              placeholder="제안 제목을 입력하세요"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full"
-              maxLength={100}
-            />
-            <div className="text-xs text-muted-foreground text-right">{formData.title.length}/100</div>
-          </div>
-
-          {/* Content Input */}
-          <div className="space-y-2">
-            <Label htmlFor="content" className="text-sm font-medium">
-              내용 *
-            </Label>
-            <Textarea
-              id="content"
-              placeholder="제안 내용을 자세히 작성해주세요&#10;&#10;예시:&#10;• 프로젝트 목표&#10;• 기대 효과&#10;• 참여 방법&#10;• 일정 계획"
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              className="w-full min-h-[200px] resize-none"
-              maxLength={1000}
-            />
-            <div className="text-xs text-muted-foreground text-right">{formData.content.length}/1000</div>
-          </div>
-
-          {/* Guidelines */}
-          <Card className="bg-muted/30">
-            <CardHeader className="pb-3">
-              <h3 className="text-sm font-medium">작성 가이드라인</h3>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <ul className="text-xs text-muted-foreground space-y-1">
-                <li>• 구체적이고 실현 가능한 제안을 작성해주세요</li>
-                <li>• 지역 주민들에게 도움이 되는 내용으로 작성해주세요</li>
-                <li>• 욕설이나 부적절한 내용은 삭제될 수 있습니다</li>
-                <li>• 개인정보나 연락처는 포함하지 마세요</li>
-              </ul>
-            </CardContent>
-          </Card>
-        </form>
-      </div>
-
-      {/* Submit Button */}
-      <div className="border-t border-border p-4">
-        <Button type="submit" onClick={handleSubmit} disabled={!isFormValid || isSubmitting} className="w-full">
-          {isSubmitting ? "등록 중..." : "제안 등록하기"}
-        </Button>
-      </div>
+            <div>
+              <Label htmlFor="content">내용</Label>
+              <Textarea
+                id="content"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="제안의 상세 내용을 입력하세요"
+              />
+            </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={onCancel}>취소</Button>
+              <Button type="submit">제안 등록하기</Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }
+
