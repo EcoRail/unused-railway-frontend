@@ -44,7 +44,7 @@ export function HomeScreen({ onPostSelect }: HomeScreenProps) {
   const [initialLoadStarted, setInitialLoadStarted] = useState(false);
 
   const fetchPosts = (latitude?: number, longitude?: number) => {
-    let url = 'http://127.0.0.1:8000/api/posts/';
+    let url = 'https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/';
     setLoading(true);
     fetchWithAuth(url)
       .then(res => {
@@ -103,7 +103,7 @@ export function HomeScreen({ onPostSelect }: HomeScreenProps) {
     const post = posts.find(p => p.id === postId);
     if (!post) return;
 
-    const response = await fetchWithAuth(`http://127.0.0.1:8000/api/posts/${postId}/recommend/`, {
+    const response = await fetchWithAuth(`https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/${postId}/recommend/`, {
         method: 'POST'
     });
     if (response.ok) {

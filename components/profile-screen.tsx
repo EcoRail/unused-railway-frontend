@@ -35,24 +35,24 @@ export function ProfileScreen({ onLogout, onPostSelect }: { onLogout: () => void
 
   useEffect(() => {
     // 사용자 정보 가져오기
-    fetchWithAuth('http://127.0.0.1:8000/api/auth/user/')
+    fetchWithAuth('https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/auth/user/')
       .then(res => res.json())
       .then(data => setUser(data));
 
     // 내가 쓴 글 가져오기
-    fetchWithAuth('http://127.0.0.1:8000/api/posts/my_posts/')
+    fetchWithAuth('https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/my_posts/')
       .then(res => res.json())
       .then(data => setMyPosts(data.results || data));
 
     // 내가 추천한 글 가져오기
-    fetchWithAuth('http://127.0.0.1:8000/api/posts/recommended_posts/')
+    fetchWithAuth('https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/recommended_posts/')
       .then(res => res.json())
       .then(data => setRecommendedPosts(data.results || data));
   }, []);
 
   const handleLogout = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
-    await fetchWithAuth('http://127.0.0.1:8000/api/auth/logout/', {
+    await fetchWithAuth('https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/auth/logout/', {
       method: 'POST',
       body: JSON.stringify({ refresh: refreshToken }),
     });
@@ -63,7 +63,7 @@ export function ProfileScreen({ onLogout, onPostSelect }: { onLogout: () => void
 
   const handleDeleteAccount = async () => {
     if (window.confirm('정말로 회원 탈퇴를 하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-      const response = await fetchWithAuth('http://127.0.0.1:8000/api/auth/user/', {
+      const response = await fetchWithAuth('https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/auth/user/', {
         method: 'DELETE',
       });
       if (response.ok) {

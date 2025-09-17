@@ -31,7 +31,7 @@ export function PostCreationForm({ railwayPropertyId, onPostCreated, onCancel }:
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const response = await fetchWithAuth('http://127.0.0.1:8000/api/posts/', {
+    const response = await fetchWithAuth('https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/', {
       method: 'POST',
       body: JSON.stringify({
         title,

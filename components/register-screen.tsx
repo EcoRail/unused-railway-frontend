@@ -26,7 +26,7 @@ export function RegisterScreen({ onRegister, onGoToLogin }: RegisterScreenProps)
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault()
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/auth/register/", {
+    const response = await fetch("https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/auth/register/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

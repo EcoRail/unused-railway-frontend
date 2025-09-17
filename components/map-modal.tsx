@@ -42,7 +42,7 @@ export function MapModal({ location, onClose, onCreateProposal, onOpenPost }: Ma
       try {
         // 1) 주소로 RailwayProperty 조회
         const addr = location.name
-        const propRes = await fetch(`http://127.0.0.1:8000/api/map/properties/?search=${encodeURIComponent(addr)}`)
+        const propRes = await fetch(`https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/map/properties/?search=${encodeURIComponent(addr)}`)
         const propData = await propRes.json()
         const properties = propData.results || propData
         const exact = properties?.find((p: any) => p.address === addr) || properties?.[0]
@@ -52,7 +52,7 @@ export function MapModal({ location, onClose, onCreateProposal, onOpenPost }: Ma
           return
         }
         // 2) 해당 property id로 posts 조회
-        const postsRes = await fetch(`http://127.0.0.1:8000/api/posts/?railway_property=${exact.id}`)
+        const postsRes = await fetch(`https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/?railway_property=${exact.id}`)
         const postsData = await postsRes.json()
         const list = (postsData.results || postsData)
           .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
