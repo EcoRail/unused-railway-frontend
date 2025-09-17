@@ -14,14 +14,10 @@ interface Post {
   recommendation_count: number;
   created_at: string;
   is_recommended: boolean;
-
-  // 조회 전용 필드
   railway_property_address: string;
   status_display: string;
   railway_property_id?: number;
 }
-
-
 
 interface HomeScreenProps {
   onPostSelect: (postId: number) => void;
@@ -43,11 +39,12 @@ export function HomeScreen({ onPostSelect }: HomeScreenProps) {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true);
   const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
+  
+  // "이번 세션에서 모달/데이터 로딩을 시작했는지" 기억하는 상태
+  const [initialLoadStarted, setInitialLoadStarted] = useState(false);
 
   const fetchPosts = (latitude?: number, longitude?: number) => {
     let url = 'http://127.0.0.1:8000/api/posts/';
-    // 위치 정렬 파라미터는 현재 백엔드에서 사용하지 않으므로 제거
-
     setLoading(true);
     fetchWithAuth(url)
       .then(res => {
@@ -55,37 +52,52 @@ export function HomeScreen({ onPostSelect }: HomeScreenProps) {
         return res.json();
       })
       .then(data => {
-          // DRF 페이지네이션 응답 형식에 맞춤
-          setPosts(data.results || data);
-          setLoading(false);
+        setPosts(data.results || data);
+        setLoading(false);
       })
       .catch(error => {
-          console.error("Error fetching posts:", error);
-          setLoading(false);
+        console.error("Error fetching posts:", error);
+        setLoading(false);
       });
   };
-
-  useEffect(() => {
-    const hasSeenModal = sessionStorage.getItem('hasSeenWelcomeModal');
-    if (!hasSeenModal) {
-      // 본 적이 없다면, 모달을 띄웁니다.
-      setIsWelcomeModalOpen(true);
-    }
-    // 사용자 위치 정보 요청
+  
+  // 위치 정보와 함께 게시글을 불러오는 함수
+  const loadPostsWithGeo = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          fetchPosts(position.coords.latitude, position.coords.longitude);
-        },
+        (position) => fetchPosts(position.coords.latitude, position.coords.longitude),
         (error) => {
           console.warn("Could not get location, fetching posts without sorting.", error);
-          fetchPosts(); // 위치 정보 거부 시, 기본 목록 호출
+          fetchPosts();
         }
       );
     } else {
-      fetchPosts(); // Geolocation API 미지원 브라우저
+      fetchPosts();
     }
-  }, []);
+  };
+
+  // 컴포넌트가 처음 로드될 때 딱 한 번만 실행되는 로직
+  useEffect(() => {
+    const hasSeenModal = sessionStorage.getItem('hasSeenWelcomeModal');
+    if (hasSeenModal) {
+      // 모달을 본 적이 있다면, 바로 데이터 로딩 시작
+      setLoading(false);
+      loadPostsWithGeo();
+    } else {
+      // 본 적이 없다면, 모달을 띄우고 "로딩중" 상태를 해제
+      setIsWelcomeModalOpen(true);
+      setLoading(false); 
+    }
+  }, []); // 의존성 배열이 비어있어 최초 1회만 실행
+
+  // 모달의 상태가 변경될 때 (특히 닫힐 때) 데이터 로딩을 시작
+  useEffect(() => {
+    // 모달이 닫혔고, 아직 포스트가 로딩되지 않았다면 (최초 로딩 방지)
+    if (!isWelcomeModalOpen && posts.length === 0 && !initialLoadStarted) {
+      setInitialLoadStarted(true); // 로딩 시작을 기록
+      loadPostsWithGeo();
+    }
+  }, [isWelcomeModalOpen, posts.length, initialLoadStarted]);
   
   const handleRecommend = async (postId: number) => {
     const post = posts.find(p => p.id === postId);
@@ -95,7 +107,6 @@ export function HomeScreen({ onPostSelect }: HomeScreenProps) {
         method: 'POST'
     });
     if (response.ok) {
-        // 추천 성공 시, 상태를 반전시키고 추천 수를 조정합니다.
         setPosts(posts.map(p => {
             if (p.id === postId) {
                 const newIsRecommended = !p.is_recommended;
@@ -136,7 +147,7 @@ export function HomeScreen({ onPostSelect }: HomeScreenProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="line-clamp-2 text-sm text-foreground">{post.content}</p> {/* 내용 2줄만 */}
+            <p className="line-clamp-2 text-sm text-foreground">{post.content}</p>
             <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">
               <span>작성자: {post.author_username}</span>
               <span>{new Date(post.created_at).toLocaleDateString()}</span>
@@ -149,9 +160,7 @@ export function HomeScreen({ onPostSelect }: HomeScreenProps) {
             </div>
           </CardContent>
         </Card>
-
       ))}
     </div>
   )
 }
-
