@@ -9,13 +9,14 @@ export function SplashScreen() {
           background: "linear-gradient(135deg, #f0fdf4 0%, #e5e7eb 100%)",
         }}
       >
-        <div className="text-center relative z-10">
+        {/* 👇 여기가 수정한 부분입니다. */}
+        <div className="text-center relative z-10 mb-60">
           <div className="mb-8 flex justify-center">
             <Image
               src="/logo.png"
               alt="Eco Rail Logo"
-              width={128}
-              height={128}
+              width={200}
+              height={200}
               className="rounded-full"
             />
           </div>
@@ -33,7 +34,7 @@ export function SplashScreen() {
               textShadow: "0 1px 2px rgba(0,0,0,0.1)",
             }}
           >
-            당신이 발견하는 새로운 철길
+            유레카! 당신이 발견하는 새로운 철길
           </p>
           <div className="mt-8">
             <div
@@ -45,4 +46,3 @@ export function SplashScreen() {
     </div>
   )
 }
-
