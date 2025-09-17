@@ -19,7 +19,7 @@
   --muted-foreground: oklch(0.184 0 0); /* #1f2937 - Muted text */
   --accent: oklch(0.784 0.221 110.72); /* #84cc16 - Accent highlights */
   --accent-foreground: oklch(0.184 0 0); /* #1f2937 - Text on accent */
-  --destructive: oklch(0.577 0.245 27.325); /* #e53e3e - Destructive actions */
+  --destructive: oklch(71.864% 0.14501 18.2); /* #e53e3e - Destructive actions */
   --destructive-foreground: oklch(1 0 0); /* #ffffff - Text on destructive */
   --border: oklch(0.922 0.013 197.137); /* #e5e7eb - Border color */
   --input: oklch(1 0 0); /* #ffffff - Input background */
