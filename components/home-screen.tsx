@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ThumbsUp, MessageCircle } from "lucide-react"
+import { WelcomeModal } from "@/components/welcome-modal"
 
 // API 응답 데이터에 대한 타입 정의
 interface Post {
@@ -41,6 +42,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
 export function HomeScreen({ onPostSelect }: HomeScreenProps) {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true);
+  const [isWelcomeModalOpen, setIsWelcomeModalOpen] = useState(false);
 
   const fetchPosts = (latitude?: number, longitude?: number) => {
     let url = 'http://127.0.0.1:8000/api/posts/';
@@ -64,6 +66,11 @@ export function HomeScreen({ onPostSelect }: HomeScreenProps) {
   };
 
   useEffect(() => {
+    const hasSeenModal = sessionStorage.getItem('hasSeenWelcomeModal');
+    if (!hasSeenModal) {
+      // 본 적이 없다면, 모달을 띄웁니다.
+      setIsWelcomeModalOpen(true);
+    }
     // 사용자 위치 정보 요청
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -114,9 +121,13 @@ export function HomeScreen({ onPostSelect }: HomeScreenProps) {
 
   return (
     <div className="h-full overflow-auto p-4 space-y-4">
+      <WelcomeModal 
+        isOpen={isWelcomeModalOpen} 
+        onOpenChange={setIsWelcomeModalOpen} 
+      />
       <h1 className="text-2xl font-bold">제안 목록</h1>
       {posts.map((post) => (
-        <Card key={post.id} onClick={() => onPostSelect(post.id)} className="cursor-pointer hover:bg-muted/50">
+        <Card key={post.id} onClick={() => onPostSelect(post.id)} className="cursor-pointer hover:bg-muted/50 shadow-lg hover:shadow-xl transition-shadow">
           <CardHeader>
             <CardTitle className="text-lg font-bold">{post.title}</CardTitle>
             <div className="text-sm text-muted-foreground flex justify-between">

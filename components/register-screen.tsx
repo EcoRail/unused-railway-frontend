@@ -23,11 +23,29 @@ export function RegisterScreen({ onRegister, onGoToLogin }: RegisterScreenProps)
     phone: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Mock registration - in real app, this would call Django backend
-    if (Object.values(formData).every((value) => value.trim() !== "")) {
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/auth/register/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        nickname: formData.nickname,
+        phone: formData.phone,
+      }),
+    })
+    if (response.ok) {
       onRegister(true)
+    } else {
+      const errorData = await response.json()
+      console.error("Registration failed", errorData)
+    }
+  } catch (error) {
+    console.log(formData)
+    console.error("Error:", error)
     }
   }
 

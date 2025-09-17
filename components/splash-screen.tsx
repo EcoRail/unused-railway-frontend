@@ -25,7 +25,7 @@ export function SplashScreen() {
               textShadow: "0 2px 4px rgba(0,0,0,0.1)",
             }}
           >
-            철도 유휴부지
+            U Rail Car
           </h1>
           <p
             className="text-xl text-primary/80"
@@ -33,7 +33,7 @@ export function SplashScreen() {
               textShadow: "0 1px 2px rgba(0,0,0,0.1)",
             }}
           >
-            활용 플랫폼
+            당신이 발견하는 새로운 철길
           </p>
           <div className="mt-8">
             <div

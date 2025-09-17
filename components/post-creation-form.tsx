@@ -13,15 +13,14 @@ interface PostCreationFormProps {
   onCancel: () => void;
 }
 
-// 공통 API 호출 함수
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
-    const token = localStorage.getItem('accessToken');
-    const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers,
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-    };
-    return fetch(url, { ...options, headers });
+  const token = localStorage.getItem('accessToken');
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  };
+  return fetch(url, { ...options, headers });
 }
 
 export function PostCreationForm({ railwayPropertyId, onPostCreated, onCancel }: PostCreationFormProps) {
@@ -31,12 +30,6 @@ export function PostCreationForm({ railwayPropertyId, onPostCreated, onCancel }:
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log("제출 데이터:", {
-      title,
-      content,
-      railway_property: railwayPropertyId,
-    });
 
     const response = await fetchWithAuth('http://127.0.0.1:8000/api/posts/', {
       method: 'POST',
@@ -48,7 +41,6 @@ export function PostCreationForm({ railwayPropertyId, onPostCreated, onCancel }:
     });
 
     const data = await response.json();
-    console.log("서버 응답:", response.status, data);
 
     if (response.ok) {
       alert('제안이 성공적으로 등록되었습니다.');
@@ -62,9 +54,9 @@ export function PostCreationForm({ railwayPropertyId, onPostCreated, onCancel }:
     }
   };
 
-
   return (
-    <div className="p-4">
+    // 👇 *** 여기가 수정한 부분입니다 *** 👇
+    <div className="h-[100vh] overflow-y-auto p-4 pt-20 pb-24">
       <Card>
         <CardHeader>
           <CardTitle>새로운 제안 등록</CardTitle>
@@ -87,6 +79,7 @@ export function PostCreationForm({ railwayPropertyId, onPostCreated, onCancel }:
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="제안의 상세 내용을 입력하세요"
+                rows={10} // 내용 입력 칸을 좀 더 길게 늘려줍니다.
               />
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -100,4 +93,3 @@ export function PostCreationForm({ railwayPropertyId, onPostCreated, onCancel }:
     </div>
   );
 }
-
