@@ -25,7 +25,7 @@ export function LoginScreen({ onLogin, onGoToRegister }: LoginScreenProps) {
     setError(null)
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
+      const response = await fetch("https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/auth/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -40,7 +40,7 @@ export function LoginScreen({ onLogin, onGoToRegister }: LoginScreenProps) {
         localStorage.setItem("refreshToken", data.refresh)
 
         // ✅ 로그인 직후 사용자 정보 가져오기
-        const userRes = await fetch("http://127.0.0.1:8000/api/auth/user/", {
+        const userRes = await fetch("https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/auth/user/", {
           headers: { Authorization: `Bearer ${data.access}` },
         })
         if (userRes.ok) {

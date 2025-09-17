@@ -180,7 +180,7 @@ export function MapScreen({ onOpenPost }: { onOpenPost?: (postId: number) => voi
     try {
       // 주소로 RailwayProperty를 조회해서 정확한 backend id를 얻음
       const addr = location.address
-      const res = await fetch(`/api/map/properties/?search=${encodeURIComponent(addr)}`.replace('/api','http://127.0.0.1:8000/api'))
+      const res = await fetch(`/api/map/properties/?search=${encodeURIComponent(addr)}`.replace('/api','https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api'))
       const data = await res.json()
       const list = data.results || data
       const exact = list?.find((p: any) => p.address === addr) || list?.[0]

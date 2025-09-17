@@ -66,7 +66,7 @@ export function PostDetailView({
   useEffect(() => {
     const token = localStorage.getItem("accessToken")
     if (!token) return
-    fetch("http://127.0.0.1:8000/api/auth/user/", {
+    fetch("https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/auth/user/", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -75,7 +75,7 @@ export function PostDetailView({
   }, [])
 
   const fetchPostDetail = () => {
-    fetchWithAuth(`http://127.0.0.1:8000/api/posts/${postId}/`)
+    fetchWithAuth(`https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/${postId}/`)
       .then((res) => res.json())
       .then((data) => setPost(data))
   }
@@ -102,7 +102,7 @@ export function PostDetailView({
 
   const handleAction = async (action: "recommend" | "dislike") => {
     const res = await fetchWithAuth(
-      `http://127.0.0.1:8000/api/posts/${postId}/${action}/`,
+      `https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/${postId}/${action}/`,
       { method: "POST" }
     )
     if (res.ok) fetchPostDetail()
@@ -111,7 +111,7 @@ export function PostDetailView({
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) return
     const res = await fetchWithAuth(
-      `http://127.0.0.1:8000/api/posts/${postId}/comments/`,
+      `https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/${postId}/comments/`,
       {
         method: "POST",
         body: JSON.stringify({ content: newComment, parent: null }),
@@ -126,7 +126,7 @@ export function PostDetailView({
   const handleReplySubmit = async (parentId: number) => {
     if (!replyContent.trim()) return
     const res = await fetchWithAuth(
-      `http://127.0.0.1:8000/api/posts/${postId}/comments/`,
+      `https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/${postId}/comments/`,
       {
         method: "POST",
         body: JSON.stringify({ content: replyContent, parent: parentId }),
@@ -141,7 +141,7 @@ export function PostDetailView({
 
   const handleUpdateComment = async (commentId: number) => {
     const res = await fetchWithAuth(
-      `http://127.0.0.1:8000/api/posts/${postId}/comments/${commentId}/`,
+      `https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/${postId}/comments/${commentId}/`,
       {
         method: "PUT",
         body: JSON.stringify({ content: editingContent }),
@@ -157,7 +157,7 @@ export function PostDetailView({
   const handleDeleteComment = async (commentId: number) => {
     if (confirm("댓글을 삭제하시겠습니까?")) {
       const res = await fetchWithAuth(
-        `http://127.0.0.1:8000/api/posts/${postId}/comments/${commentId}/`,
+        `https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/${postId}/comments/${commentId}/`,
         { method: "DELETE" }
       )
       if (res.ok) fetchPostDetail()
@@ -167,7 +167,7 @@ export function PostDetailView({
   const handleDeletePost = async () => {
     if (confirm("글을 삭제하시겠습니까?")) {
       const res = await fetchWithAuth(
-        `http://127.0.0.1:8000/api/posts/${postId}/`,
+        `https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/${postId}/`,
         { method: "DELETE" }
       )
       if (res.ok) onBack()
