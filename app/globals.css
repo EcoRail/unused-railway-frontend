@@ -3,50 +3,120 @@
 @tailwind utilities;
 
 @layer base {
-  /* CSS Variables for Korean Railway App Theme */
+  /* CSS Variables for the new theme */
   :root {
-    --background: oklch(0.99 0.01 100); /* Light green background */
-    --foreground: oklch(0.278 0 0); /* Main text color */
-    --card: oklch(1 0 0); /* White card background */
-    --card-foreground: oklch(0.278 0 0); /* Card text color */
-    --popover: oklch(1 0 0); /* Popover background */
-    --popover-foreground: oklch(0.278 0 0); /* Popover text */
-    --primary: oklch(0.506 0.177 142.38); /* Railway green primary */
-    --primary-foreground: oklch(1 0 0); /* Text on primary */
-    --secondary: oklch(0.784 0.221 110.72); /* Accent green */
-    --secondary-foreground: oklch(0.278 0 0); /* Text on secondary */
-    --muted: oklch(0.98 0.013 197.137); /* Muted background */
-    --muted-foreground: oklch(0.184 0 0); /* Muted text */
-    --accent: oklch(0.784 0.221 110.72); /* Accent highlights */
-    --accent-foreground: oklch(0.184 0 0); /* Text on accent */
-    --destructive: oklch(71.864% 0.14501 18.2); /* Destructive actions */
-    --destructive-foreground: oklch(1 0 0); /* Text on destructive */
-    --border: oklch(0.922 0.013 197.137); /* Border color */
-    --input: oklch(1 0 0); /* Input background */
-    --ring: oklch(0.506 0.177 142.38 / 0.5); /* Focus ring */
-    --radius: 0.5rem;
+    /* RGB tokens for broad browser support */
+    --background: 250 253 255;
+    --foreground: 33 37 41;
+    --card: 255 255 255;
+    --card-foreground: 33 37 41;
+    --popover: 255 255 255;
+    --popover-foreground: 33 37 41;
+    --primary: 16 185 129; /* emerald */
+    --primary-foreground: 240 253 244;
+    --secondary: 226 232 240;
+    --secondary-foreground: 33 37 41;
+    --muted: 241 245 249;
+    --muted-foreground: 100 116 139;
+    --accent: 224 242 241;
+    --accent-foreground: 33 37 41;
+    --destructive: 239 68 68;
+    --destructive-foreground: 254 242 242;
+    --border: 226 232 240;
+    --input: 226 232 240;
+    --ring: 13 148 136;
+    --radius: 0.625rem;
   }
 
   .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
+    --background: 2 6 23;
+    --foreground: 248 250 252;
+    --card: 15 23 42;
+    --card-foreground: 248 250 252;
+    --popover: 15 23 42;
+    --popover-foreground: 248 250 252;
+    --primary: 16 185 129;
+    --primary-foreground: 2 6 23;
+    --secondary: 51 65 85;
+    --secondary-foreground: 248 250 252;
+    --muted: 51 65 85;
+    --muted-foreground: 148 163 184;
+    --accent: 15 118 110;
+    --accent-foreground: 248 250 252;
+    --destructive: 185 28 28;
+    --destructive-foreground: 254 226 226;
+    --border: 51 65 85;
+    --input: 51 65 85;
+    --ring: 13 148 136;
+  }
+
+  /* Fallbacks for browsers without OKLCH support */
+  @supports not (color: oklch(0 0 0)) {
+    :root {
+      --background: 255 255 255; /* #ffffff */
+      --foreground: 30 27 75; /* #1e1b4b */
+      --card: 255 255 255; /* #ffffff */
+      --card-foreground: 30 27 75; /* #1e1b4b */
+      --popover: 255 255 255; /* #ffffff */
+      --popover-foreground: 30 27 75; /* #1e1b4b */
+      --primary: 16 185 129; /* #10b981 */
+      --primary-foreground: 240 253 244; /* #ecfdf4 */
+      --secondary: 226 232 240; /* #e2e8f0 */
+      --secondary-foreground: 30 27 75; /* #1e1b4b */
+      --muted: 241 245 249; /* #f1f5f9 */
+      --muted-foreground: 100 116 139; /* #64748b */
+      --accent: 224 242 241; /* #e0f2f1 */
+      --accent-foreground: 30 27 75; /* #1e1b4b */
+      --destructive: 239 68 68; /* #ef4444 */
+      --destructive-foreground: 254 242 242; /* #fef2f2 */
+      --border: 226 232 240; /* #e2e8f0 */
+      --input: 226 232 240; /* #e2e8f0 */
+      --ring: 45 212 191; /* #2dd4bf */
+    }
+    .dark {
+      --background: 15 23 42; /* #0f172a */
+      --foreground: 248 250 252; /* #f8fafc */
+      --card: 30 41 59; /* #1e293b */
+      --card-foreground: 248 250 252; /* #f8fafc */
+      --popover: 30 41 59; /* #1e293b */
+      --popover-foreground: 248 250 252; /* #f8fafc */
+      --primary: 16 185 129; /* #10b981 */
+      --primary-foreground: 2 6 23; /* #020617 */
+      --secondary: 51 65 85; /* #334155 */
+      --secondary-foreground: 248 250 252; /* #f8fafc */
+      --muted: 51 65 85; /* #334155 */
+      --muted-foreground: 148 163 184; /* #94a3b8 */
+      --accent: 15 118 110; /* #0f766e */
+      --accent-foreground: 248 250 252; /* #f8fafc */
+      --destructive: 185 28 28; /* #b91c1c */
+      --destructive-foreground: 254 226 226; /* #fee2e2 */
+      --border: 51 65 85; /* #334155 */
+      --input: 51 65 85; /* #334155 */
+      --ring: 45 212 191; /* #2dd4bf */
+    }
+    /* Map tokens to rgb() fallback usage */
+    body {
+      background-color: rgb(var(--background));
+      color: rgb(var(--foreground));
+    }
+    .bg-background { background-color: rgb(var(--background)); }
+    .bg-foreground { background-color: rgb(var(--foreground)); }
+    .bg-card { background-color: rgb(var(--card)); }
+    .bg-popover { background-color: rgb(var(--popover)); }
+    .bg-primary { background-color: rgb(var(--primary)); }
+    .bg-secondary { background-color: rgb(var(--secondary)); }
+    .bg-muted { background-color: rgb(var(--muted)); }
+    .bg-border { background-color: rgb(var(--border)); }
+    .text-foreground { color: rgb(var(--foreground)); }
+    .text-primary { color: rgb(var(--primary)); }
+    .text-primary-foreground { color: rgb(var(--primary-foreground)); }
+    .text-muted-foreground { color: rgb(var(--muted-foreground)); }
+    .text-card-foreground { color: rgb(var(--card-foreground)); }
+    .text-secondary-foreground { color: rgb(var(--secondary-foreground)); }
+    .text-destructive { color: rgb(var(--destructive)); }
+    .text-destructive-foreground { color: rgb(var(--destructive-foreground)); }
+    .border-border { border-color: rgb(var(--border)); }
+    .border-input { border-color: rgb(var(--input)); }
   }
 
   /* Base and Mobile-first Layout Styles */
@@ -55,11 +125,13 @@
   }
 
   body {
-    @apply bg-background text-foreground min-h-full;
+    min-height: 100%;
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
   }
 
-  #__next {
-    @apply w-full h-full;
+  .app-container {
+    @apply w-full h-full bg-gradient-to-b from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-slate-950;
      /* On larger screens, constrain the app to a phone-like width */
     @screen sm {
       max-width: 420px;
