@@ -21,21 +21,20 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
-        {/* ✅ 카카오맵 SDK는 반드시 head 쪽에 배치 */}
+        {/* 잊지 말고 'apikey' 부분을 실제 카카오 JavaScript 키로 교체하세요! */}
         <Script
           src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY}&libraries=services&autoload=false`}
           strategy="beforeInteractive"
         />
       </head>
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={null}>{children}</Suspense>
+        {/* ✅ 2. 모바일 화면 레이아웃을 위한 app-container를 추가했습니다. */}
+        <div className="app-container">
+          <Suspense fallback={null}>{children}</Suspense>
+        </div>
         <Analytics />
       </body>
     </html>
   )
 }
-
-
-
-
 
