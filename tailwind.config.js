@@ -9,6 +9,15 @@ module.exports = {
     "./styles/**/*.{css,scss}",
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  // --- 👇 배포 시 스타일이 사라지는 문제를 해결하기 위해 이 부분을 추가했습니다 ---
+  safelist: [
+    'h-full',
+    'flex-1',
+    'flex-col',
+    'overflow-y-auto',
+    'bg-white',
+  ],
+  // --------------------------------------------------------------------
   theme: {
     container: {
       center: true,
