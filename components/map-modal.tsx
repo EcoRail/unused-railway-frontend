@@ -85,7 +85,7 @@ export function MapModal({ location, onClose, onCreateProposal, onOpenPost }: Ma
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <Card className="w-full max-w-md mx-auto rounded-xl" onClick={(e) => e.stopPropagation()}>
+      <Card className="w-full max-w-md mx-auto rounded-xl bg-white" onClick={(e) => e.stopPropagation()}>
         <CardContent className="p-0 max-h-[80vh] overflow-auto">
           {/* Header */}
           <div className="flex items-start justify-between p-4 border-b border-border">
@@ -242,4 +242,3 @@ function StatusBadge({ status }: StatusBadgeProps) {
     </span>
   )
 }
-

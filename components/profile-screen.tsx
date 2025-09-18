@@ -129,9 +129,13 @@ export function ProfileScreen({ onLogout, onPostSelect }: { onLogout: () => void
 
       <div className="mt-8 space-y-2">
         <Button onClick={handleLogout} variant="outline" className="w-full">로그아웃</Button>
-        <Button onClick={handleDeleteAccount} variant="destructive" className="w-full">회원 탈퇴</Button>
+        <Button
+          onClick={handleDeleteAccount}
+          variant="destructive"
+          className="w-full border border-input hover:bg-destructive/90"
+          style={{ backgroundColor: '#F17B81' }}
+        >회원 탈퇴</Button>
       </div>
     </div>
   );
 }
-

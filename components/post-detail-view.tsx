@@ -279,76 +279,75 @@ export function PostDetailView({
   if (!post) return <div>로딩 중...</div>
 
   return (
-    <div
-      // 👇 여기가 수정한 부분입니다. (네비게이션 바 높이에 맞게 pt-16, pt-20 등으로 조절)
-      className="h-[100vh] overflow-y-scroll p-4 pt-5 pb-50"
-      style={{ scrollbarGutter: "stable both-edges" }}
-    >
-      <Button onClick={onBack} variant="ghost" className="mb-4">
-        {"< 뒤로가기"}
-      </Button>
+    <div className="h-full flex flex-col">
+      <div className="p-4 pb-0">
+        <Button onClick={onBack} variant="ghost">
+          {"< 뒤로가기"}
+        </Button>
+      </div>
+      <div className="flex-1 overflow-y-auto p-4 pt-2">
+        <Card>
+          <CardHeader className="flex flex-row justify-between items-center">
+            <CardTitle className="text-2xl">{post.title}</CardTitle>
+            {currentUser && post.author_username === currentUser && (
+              <Button variant="outline" size="sm" onClick={handleDeletePost}>
+                <Trash2 className="w-4 h-4 mr-1" /> 삭제
+              </Button>
+            )}
+          </CardHeader>
+          <div className="px-6 text-sm text-muted-foreground flex justify-between">
+            <span>작성자: {post.author_username}</span>
+            <span>{new Date(post.created_at).toLocaleString()}</span>
+          </div>
+          <CardContent>
+            <p className="whitespace-pre-wrap min-h-[100px] mt-4">{post.content}</p>
+            <div className="flex gap-4 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => handleAction("recommend")}
+                className="flex items-center gap-2"
+              >
+                <ThumbsUp
+                  className={`w-4 h-4 ${
+                    post.is_recommended ? "text-blue-500" : ""
+                  }`}
+                />
+                추천 {post.recommendation_count}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => handleAction("dislike")}
+                className="flex items-center gap-2"
+              >
+                <ThumbsDown
+                  className={`w-4 h-4 ${
+                    post.is_disliked ? "text-red-500" : ""
+                  }`}
+                />
+                비추천 {post.dislike_count}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader className="flex justify-between items-center">
-          <CardTitle className="text-2xl">{post.title}</CardTitle>
-          {currentUser && post.author_username === currentUser && (
-            <Button variant="outline" size="sm" onClick={handleDeletePost}>
-              <Trash2 className="w-4 h-4 mr-1" /> 삭제
-            </Button>
-          )}
-        </CardHeader>
-        <div className="px-6 text-sm text-muted-foreground flex justify-between">
-          <span>작성자: {post.author_username}</span>
-          <span>{new Date(post.created_at).toLocaleString()}</span>
-        </div>
-        <CardContent>
-          <p className="whitespace-pre-wrap min-h-[100px]">{post.content}</p>
-          <div className="flex gap-4 mt-6">
-            <Button
-              variant="outline"
-              onClick={() => handleAction("recommend")}
-              className="flex items-center gap-2"
-            >
-              <ThumbsUp
-                className={`w-4 h-4 ${
-                  post.is_recommended ? "text-blue-500" : ""
-                }`}
-              />
-              추천 {post.recommendation_count}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => handleAction("dislike")}
-              className="flex items-center gap-2"
-            >
-              <ThumbsDown
-                className={`w-4 h-4 ${
-                  post.is_disliked ? "text-red-500" : ""
-                }`}
-              />
-              비추천 {post.dislike_count}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+            <MessageCircle className="w-5 h-5" /> 댓글 {totalComments}
+          </h3>
+          <div className="flex gap-2">
+            <Textarea
+              placeholder="댓글을 입력하세요..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+            />
+            <Button onClick={handleCommentSubmit}>
+              <Send className="w-4 h-4" />
             </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" /> 댓글 {totalComments}
-        </h3>
-        <div className="flex gap-2">
-          <Textarea
-            placeholder="댓글을 입력하세요..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-          />
-          <Button onClick={handleCommentSubmit}>
-            <Send className="w-4 h-4" />
-          </Button>
-        </div>
-        <Separator className="my-4" />
-        <div className="space-y-2">
-          {rootComments.map((comment) => renderComment(comment))}
+          <Separator className="my-4" />
+          <div className="space-y-2">
+            {rootComments.map((comment) => renderComment(comment))}
+          </div>
         </div>
       </div>
     </div>
