@@ -34,9 +34,9 @@
   --sidebar: oklch(0.98 0.013 197.137); /* #f8fafc - Sidebar background */
   --sidebar-foreground: oklch(0.184 0 0); /* #1f2937 - Sidebar text */
   --sidebar-primary: oklch(0.506 0.177 142.38); /* #15803d - Sidebar primary */
-  --sidebar-primary-foreground: oklch(1 0 0); /* #ffffff - Text on sidebar primary */
+  --sidebar-primary-foreground: oklch(1 0 0); /* #ffffff - Sidebar primary text */
   --sidebar-accent: oklch(0.784 0.221 110.72); /* #84cc16 - Sidebar accent */
-  --sidebar-accent-foreground: oklch(0.184 0 0); /* #1f2937 - Text on sidebar accent */
+  --sidebar-accent-foreground: oklch(0.184 0 0); /* #1f2937 - Sidebar accent text */
   --sidebar-border: oklch(0.922 0.013 197.137); /* #e5e7eb - Sidebar border */
   --sidebar-ring: oklch(0.506 0.177 142.38 / 0.5); /* Sidebar focus ring */
 }
@@ -119,16 +119,16 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* 전역 outline 지정 삭제 */
   }
-  /* 웹페이지 전체가 스크롤되지 않도록 설정 */
   html,
   body,
   #__next {
     @apply h-full overflow-hidden;
   }
   body {
-    @apply bg-background text-foreground;
+    /* Tailwind 클래스 대신 변수 사용 */
+    background-color: var(--background);
+    color: var(--foreground);
   }
 }
-
