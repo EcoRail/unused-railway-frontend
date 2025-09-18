@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 // 경로를 수정했습니다.
 import { Card, CardContent } from "@/components/ui/card";
+import { KakaoStaticMap } from "@/components/kakao-static-map";
 
 // 타입 정의
 interface User {
@@ -107,6 +108,11 @@ export function ProfileScreen({ onLogout, onPostSelect }: { onLogout: () => void
                 </div>
                 <div className="font-semibold mt-1">{post.title}</div>
                 <div className="text-xs text-muted-foreground mt-1">작성자: {post.author_username}</div>
+                {post.railway_property_address && (
+                  <div className="mt-3 rounded-lg overflow-hidden border">
+                    <KakaoStaticMap address={post.railway_property_address} />
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -121,6 +127,11 @@ export function ProfileScreen({ onLogout, onPostSelect }: { onLogout: () => void
                 </div>
                 <div className="font-semibold mt-1">{post.title}</div>
                 <div className="text-xs text-muted-foreground mt-1">작성자: {post.author_username}</div>
+                {post.railway_property_address && (
+                  <div className="mt-3 rounded-lg overflow-hidden border">
+                    <KakaoStaticMap address={post.railway_property_address} />
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -129,12 +140,7 @@ export function ProfileScreen({ onLogout, onPostSelect }: { onLogout: () => void
 
       <div className="mt-8 space-y-2">
         <Button onClick={handleLogout} variant="outline" className="w-full">로그아웃</Button>
-        <Button
-          onClick={handleDeleteAccount}
-          variant="destructive"
-          className="w-full border border-input hover:bg-destructive/90"
-          style={{ backgroundColor: '#F17B81' }}
-        >회원 탈퇴</Button>
+        <Button onClick={handleDeleteAccount} variant="destructive" className="w-full">회원 탈퇴</Button>
       </div>
     </div>
   );

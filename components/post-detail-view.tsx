@@ -16,6 +16,9 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+// KakaoStaticMap 컴포넌트가 존재한다고 가정하고 import합니다.
+// 만약 파일 위치가 다르다면 경로를 수정해야 합니다.
+import { KakaoStaticMap } from "@/components/kakao-static-map"
 
 interface Comment {
   id: number
@@ -36,6 +39,7 @@ interface PostDetail {
   is_recommended: boolean
   is_disliked: boolean
   comments: Comment[]
+  railway_property_address?: string
 }
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
@@ -281,11 +285,11 @@ export function PostDetailView({
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 pb-0">
-        <Button onClick={onBack} variant="ghost">
+        <Button onClick={onBack} variant="ghost" className="mb-4">
           {"< 뒤로가기"}
         </Button>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 pt-2">
+      <div className="flex-1 overflow-y-auto p-4 pt-0">
         <Card>
           <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle className="text-2xl">{post.title}</CardTitle>
@@ -299,8 +303,18 @@ export function PostDetailView({
             <span>작성자: {post.author_username}</span>
             <span>{new Date(post.created_at).toLocaleString()}</span>
           </div>
-          <CardContent>
-            <p className="whitespace-pre-wrap min-h-[100px] mt-4">{post.content}</p>
+          <CardContent className="pt-4">
+            <p className="whitespace-pre-wrap min-h-[100px]">{post.content}</p>
+            {post.railway_property_address && (
+              <div className="mt-4">
+                <div className="text-sm text-muted-foreground mb-2">
+                  위치: {post.railway_property_address}
+                </div>
+                <div className="rounded-lg overflow-hidden border">
+                  <KakaoStaticMap address={post.railway_property_address} height={200} />
+                </div>
+              </div>
+            )}
             <div className="flex gap-4 mt-6">
               <Button
                 variant="outline"
