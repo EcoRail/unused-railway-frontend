@@ -35,10 +35,12 @@ export function WelcomeModal({ isOpen, onOpenChange }: WelcomeModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      {/* 👇 *** 여기가 핵심 변경사항입니다 *** 👇 */}
-      {/* 1. flex-col로 세로 레이아웃을 잡고, 화면 높이에 따라 최대 높이를 지정합니다. */}
-      <DialogContent className="sm:max-w-lg bg-green-50 flex flex-col h-[85vh]">
-        <DialogHeader className="shrink-0"> {/* 헤더는 크기가 고정됩니다. */}
+      {/* 배경색을 흰색(#ffffff)으로 지정합니다. */}
+      <DialogContent
+        className="sm:max-w-lg flex flex-col h-[85vh]"
+        style={{ backgroundColor: "#ffffff" }}
+      >
+        <DialogHeader className="shrink-0">
           <DialogTitle className="text-2xl">글 등록 방법 🚆</DialogTitle>
           <DialogDescription>
             {page === 1 
@@ -47,7 +49,7 @@ export function WelcomeModal({ isOpen, onOpenChange }: WelcomeModalProps) {
           </DialogDescription>
         </DialogHeader>
         
-        {/* 2. 이미지 영역은 남은 공간을 모두 차지하고, 내용이 길어지면 스크롤됩니다. */}
+        {/* 이미지 영역 */}
         <div className="flex-1 overflow-y-auto py-4">
           {page === 1 ? (
             <Image
@@ -66,34 +68,31 @@ export function WelcomeModal({ isOpen, onOpenChange }: WelcomeModalProps) {
           )}
         </div>
 
-        {/* 3. 버튼 영역은 항상 하단에 고정됩니다. */}
+        {/* 버튼 영역 */}
         <div className="flex justify-between items-center pt-4 shrink-0">
-            {/* 왼쪽 버튼 */}
-            <div className="w-24"> {/* 영역을 잡아주어 중앙 정렬을 돕습니다 */}
-                {page === 2 && (
-                    <Button variant="ghost" onClick={() => setPage(1)}>
-                        <ChevronLeft className="h-4 w-4 mr-1" />
-                        이전
-                    </Button>
-                )}
-            </div>
+          <div className="w-24">
+            {page === 2 && (
+              <Button variant="ghost" onClick={() => setPage(1)}>
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                이전
+              </Button>
+            )}
+          </div>
 
-            {/* 페이지 표시 (1/2) */}
-            <span className="text-sm text-gray-500">{page} / 2</span>
+          <span className="text-sm text-gray-500">{page} / 2</span>
 
-            {/* 오른쪽 버튼 */}
-            <div className="w-24 flex justify-end">
-                {page === 1 ? (
-                    <Button onClick={() => setPage(2)}>
-                        다음
-                        <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
-                ) : (
-                    <Button onClick={handleDoNotShowAgain}>
-                        다시 보지 않기
-                    </Button>
-                )}
-            </div>
+          <div className="w-24 flex justify-end">
+            {page === 1 ? (
+              <Button onClick={() => setPage(2)}>
+                다음
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            ) : (
+              <Button onClick={handleDoNotShowAgain}>
+                다시 보지 않기
+              </Button>
+            )}
+          </div>
         </div>
         
         {page === 2 && (
