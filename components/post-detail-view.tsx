@@ -16,8 +16,6 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-// KakaoStaticMap 컴포넌트가 존재한다고 가정하고 import합니다.
-// 만약 파일 위치가 다르다면 경로를 수정해야 합니다.
 import { KakaoStaticMap } from "@/components/kakao-static-map"
 
 interface Comment {
@@ -81,7 +79,10 @@ export function PostDetailView({
   const fetchPostDetail = () => {
     fetchWithAuth(`https://port-0-unused-railway-backend-mfof24a94652eacb.sel3.cloudtype.app/api/posts/${postId}/`)
       .then((res) => res.json())
-      .then((data) => setPost(data))
+      .then((data) => {
+        console.log("Fetched post data:", data) // API 응답 데이터 전체를 확인하는 로그
+        setPost(data)
+      })
   }
 
   useEffect(() => {
@@ -285,11 +286,11 @@ export function PostDetailView({
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 pb-0">
-        <Button onClick={onBack} variant="ghost" className="mb-4">
+        <Button onClick={onBack} variant="ghost">
           {"< 뒤로가기"}
         </Button>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 pt-0">
+      <div className="flex-1 overflow-y-auto p-4 pt-2">
         <Card>
           <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle className="text-2xl">{post.title}</CardTitle>
@@ -303,8 +304,8 @@ export function PostDetailView({
             <span>작성자: {post.author_username}</span>
             <span>{new Date(post.created_at).toLocaleString()}</span>
           </div>
-          <CardContent className="pt-4">
-            <p className="whitespace-pre-wrap min-h-[100px]">{post.content}</p>
+          <CardContent>
+            <p className="whitespace-pre-wrap min-h-[100px] mt-4">{post.content}</p>
             {post.railway_property_address && (
               <div className="mt-4">
                 <div className="text-sm text-muted-foreground mb-2">
@@ -367,3 +368,4 @@ export function PostDetailView({
     </div>
   )
 }
+
