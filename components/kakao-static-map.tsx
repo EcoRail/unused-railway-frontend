@@ -42,9 +42,16 @@ export function KakaoStaticMap({ address, height = 160, level = 3, className }: 
 
     kakao.maps.load(() => {
       const geocoder = new kakao.maps.services.Geocoder()
-      geocoder.addressSearch(address, (result: any[], status: string) => {
-        if (status !== kakao.maps.services.Status.OK || !result?.length) return
+      console.log("Searching for address:", address); // 디버깅용 로그 추가
 
+      geocoder.addressSearch(address, (result: any[], status: string) => {
+        console.log("Geocoding status:", status); // 디버깅용 로그 추가
+        if (status !== kakao.maps.services.Status.OK || !result?.length) {
+          console.error("Geocoding failed for address:", address); // 에러 로그 추가
+          return
+        }
+        
+        console.log("Geocoding result:", result); // 결과 로그 추가
         const { x, y } = result[0]
         const coords = new kakao.maps.LatLng(Number(y), Number(x))
 
